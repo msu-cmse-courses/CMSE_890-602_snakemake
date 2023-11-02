@@ -8,7 +8,8 @@ For this workshop, we will analyse our data using various software. However, the
 
 ### Check your OS
 
-If you already use Linux or MacOS X, great! Ignore this paragraph!. If you use Windows, log in to your ICER HPCC account instead.
+If you already use Linux or MacOS X, great! Ignore this paragraph!. If you use Windows, log in to your ICER HPCC account instead. The total required storage for this 
+workshop is **~2 GB**.
 
 ### Installing miniconda
 
