@@ -58,8 +58,4 @@
     
     - [Basic demo workflow](https://github.com/nesi/snakemake_workshop/tree/main/basic_demo_workflow)
     - [Leveled up demo workflow](https://github.com/nesi/snakemake_workshop/tree/main/leveled_up_demo_workflow)
-    
-    **Appendices:**
-    
-    - [Setup for running on your machine using conda](./workshop_material/supplementary/99_appendix_setup_on_your_machine.md)
-    - [Use conda environments](./workshop_material/supplementary/99_appendix_use_conda_environments.md)
+
