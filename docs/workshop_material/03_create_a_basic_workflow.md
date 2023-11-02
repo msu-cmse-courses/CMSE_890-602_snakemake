@@ -103,9 +103,13 @@ First lets run the first step in our workflow ([fastqc](https://www.bioinformati
 
 !!! terminal "code"
 
-    - First make sure to have [fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) available. On NeSI, load the corresponding module
+    - First make sure to have [fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) available. Install it into the snakemake_env for now
     ```bash
-    module load FastQC/0.11.9
+    conda activate snakemake_env
+    ```
+    - Note that we are using [mamba](https://mamba.readthedocs.io/en/latest/user_guide/mamba.html) because it is faster and we installed it with snakemake
+    ```bash
+    mamba install bioconda::fastqc=0.11.9
     ```
     
     - See what parameters are available so we know how we want to run this software before we put it in a Snakemake workflow
@@ -269,6 +273,7 @@ The use of the word `input` in `rule all` can be confusing, but in this context,
             zip = ["../results/fastqc/NA24631_1_fastqc.zip", "../results/fastqc/NA24631_2_fastqc.zip"]
         threads: 2
         shell:
+            "conda activate fastq | "
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads}"
     ```
 
@@ -293,6 +298,11 @@ Let's test the workflow! First we need to be in the `workflow` directory, where 
 Then let's carry out a dryrun of the workflow, where no actual analysis is undertaken (fastqc is *not* run) but the overall Snakemake structure is run/validated. This is a good way to check for errors in your Snakemake workflow before actually running your workflow.
 
 !!! terminal "code"
+    Make sure you activate your snakemake environment
+
+    ```bash
+    conda activate snakemake_env
+    ```
 
     ```bash
     snakemake --dryrun
@@ -588,6 +598,7 @@ rule fastqc:
 +   conda:
 +       "envs/fastqc.yaml"
     shell:
+-       "conda activate fastq | "
         "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads}"
 ```
 

@@ -29,7 +29,7 @@ With Miniconda, we can create a conda environment which acts as a space containe
 Create a conda environment (called `snakemake_env`) that has Snakemake installed (and all it's dependant software) and git (which will be used to clone this repository later)
 
 ```bash
-conda create -n snakemake_env snakemake mamba git
+conda create -n snakemake_env snakemake mamba
 ```
 
 Respond yes to the following prompt to install the necessary software in the new conda environment:
