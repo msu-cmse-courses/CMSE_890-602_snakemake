@@ -3,7 +3,7 @@
 ## This workshop
 
 
-! note
+!!! note
 
     This workshop has been adapted for use in CMSE 890-602 Reproducible Computational Workflows. It was previously designed by NeSI and can be found here https://github.com/nesi/snakemake_workshop
 
