@@ -601,7 +601,7 @@ rule fastqc:
         "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads}"
 ```
 
-Run again, now telling Snakemake to use to use [Conda](https://docs.conda.io/en/latest/) to automatically install our software by using the `--use-conda` and `--conda-frontend conda` flags
+Run again, now telling Snakemake to use to use [Conda](https://docs.conda.io/en/latest/) to automatically install our software by using the `--use-conda` and `--conda-frontend mamba` flags. Note that we are using the `mamba` solver here. Set `conda` if you want to use the classic solver.
 
 ```diff
 # first remove output of last run
@@ -609,7 +609,7 @@ rm -r ../results/*
 
 # Run dryrun again
 - snakemake --dryrun --cores 2
-+ snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
++ snakemake --dryrun --cores 2 --use-conda --conda-frontend mamba
 ```
 
 My output:
@@ -656,7 +656,7 @@ Let's do a full run
 
 ```diff
 - snakemake --cores 2
-+ snakemake --cores 2 --use-conda --conda-frontend conda
++ snakemake --cores 2 --use-conda --conda-frontend mamba
 ```
 
 My output:
@@ -853,8 +853,8 @@ Different ways to write log files:
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
-    snakemake --cores 2 --use-conda --conda-frontend conda
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend mamba
+    snakemake --cores 2 --use-conda --conda-frontend mamba
     ```
 
     ??? success "output"
@@ -1047,7 +1047,7 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
     ```
     ```bash
     # run dryrun again
-    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend mamba
     ```
 
     - See how it now runs over all three of our samples in the output of the dryrun
@@ -1120,7 +1120,7 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
 
     ```bash
     # full run again
-    snakemake --cores 2 --use-conda --conda-frontend conda
+    snakemake --cores 2 --use-conda --conda-frontend mamba
     ```
 
     - All three samples were run through our workflow! And we have a log file for each sample for the fastqc rule
@@ -1262,8 +1262,8 @@ dependencies:
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
-    snakemake --cores 2 --use-conda --conda-frontend conda
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend mamba
+    snakemake --cores 2 --use-conda --conda-frontend mamba
     ```
 
     - Visualise workflow
@@ -1378,7 +1378,7 @@ What happens if we only have the final target file (`../results/multiqc_report.h
     ```
     ```bash
     # run dryrun again
-    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend mamba
     ```
 
     - It still works because it is the last file in the workflow sequence, Snakemake will do all the steps necessary to get to this target file (therefore it runs both fastqc and multiqc)
@@ -1494,7 +1494,7 @@ For example if only our fastqc outputs are defined as the target in `rule: all`
 
     ```bash
     # run dryrun again
-    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend mamba
     ```
 
     !!! success "My partial output:"
@@ -1714,8 +1714,8 @@ Run the rest of the workflow
 
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
-    snakemake --cores 2 --use-conda --conda-frontend conda
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend mamba
+    snakemake --cores 2 --use-conda --conda-frontend mamba
     ```
 
 !!! question "Notice it will run only one rule/sample/file at a time...why is that?"
@@ -1732,8 +1732,8 @@ Run again allowing Snakemake to use more cores overall `--cores 4` rather than `
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --cores 4 --use-conda --conda-frontend conda
-    snakemake --cores 4 --use-conda --conda-frontend conda
+    snakemake --dryrun --cores 4 --use-conda --conda-frontend mamba
+    snakemake --cores 4 --use-conda --conda-frontend mamba
     ```
 
 Notice the whole workflow ran much faster and several samples/files/rules were running at one time. This is because we set each rule to run with 2 threads. Initially we specified that the *maximum* number of cores to be used by the workflow was 2 with the `--cores 2` flag, meaning only one rule and sample can be run at one time. When we increased the *maximum* number of cores to be used by the workflow to 4 with `--cores 4`, up to 2 samples could be run through at one time.
@@ -1759,7 +1759,7 @@ In addition, you need to specify a maximum number of concurrent jobs using `--jo
     ```
     ```bash
     # run again on the cluster
-    snakemake --cluster "sbatch --time 00:10:00 --mem 512MB --cpus-per-task 8" --jobs 10 --use-conda --conda-frontend conda
+    snakemake --cluster "sbatch --time 00:10:00 --mem 512MB --cpus-per-task 8" --jobs 10 --use-conda --conda-frontend mamba
     ```
 
     ??? success "output"
@@ -2036,19 +2036,19 @@ You can exit the view create by `watch` by pressing CTRL+C.
     - Run a dryrun of your snakemake workflow (using environment modules to load your software) with:
     
     ```bash
-    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend mamba
     ```
     
     - Run your snakemake workflow (using environment modules to load your software) with:
     
     ```bash
-    snakemake --cores 2 --use-conda --conda-frontend conda
+    snakemake --cores 2 --use-conda --conda-frontend mamba
     ```
     
     - Run your snakemake workflow using multiple jobs on NeSI:
     
     ```bash
-    snakemake --cluster "sbatch --time 00:10:00 --mem=512MB --cpus-per-task 8" --jobs 10 --use-conda --conda-frontend conda
+    snakemake --cluster "sbatch --time 00:10:00 --mem=512MB --cpus-per-task 8" --jobs 10 --use-conda --conda-frontend mamba
     ```
     
     - Create a global wildcard to get process all your samples in a directory with:
@@ -2066,7 +2066,7 @@ You can exit the view create by `watch` by pressing CTRL+C.
     - Increase the number of samples that can be analysed at one time in your workflow by increasing the maximum number of cores to be used at one time with the `--cores` command
     
     ```bash
-    snakemake --cores 4 --use-conda --conda-frontend conda
+    snakemake --cores 4 --use-conda --conda-frontend mamba
     ```
 
 # Our final snakemake workflow!

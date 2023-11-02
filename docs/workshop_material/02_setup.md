@@ -14,14 +14,6 @@ If you already use Linux or MacOS X, great! Ignore this paragraph!. If you use W
 
 Information on how to install Miniconda can be found [on their website](https://docs.conda.io/en/latest/miniconda.html). Snakemake also provides information on installing Miniconda in [their documentation](https://snakemake.readthedocs.io/en/stable/tutorial/setup.html#step-1-installing-miniconda-3)
 
-Once miniconda is installed, [set up your channels](https://bioconda.github.io/user/install.html#set-up-channels) (channels are locations where packages/software are can be installed from)
-
-```bash
-conda config --add channels defaults
-conda config --add channels bioconda
-conda config --add channels conda-forge
-```
-
 ## Create a conda environment
 
 With Miniconda, we can create a conda environment which acts as a space contained from the rest of the machine in which our workflow will automatically install all the necessary software it uses, supporting the portability and reproducibility of your workflow.
@@ -29,7 +21,7 @@ With Miniconda, we can create a conda environment which acts as a space containe
 Create a conda environment (called `snakemake_env`) that has Snakemake installed (and all it's dependant software) and git (which will be used to clone this repository later)
 
 ```bash
-conda create -n snakemake_env snakemake mamba
+conda create -n snakemake_env bioconda::snakemake mamba
 ```
 
 Respond yes to the following prompt to install the necessary software in the new conda environment:
