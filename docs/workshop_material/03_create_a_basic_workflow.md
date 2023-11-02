@@ -598,7 +598,6 @@ rule fastqc:
 +   conda:
 +       "envs/fastqc.yaml"
     shell:
--       "conda activate fastq | "
         "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads}"
 ```
 
