@@ -1155,7 +1155,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - bioconda::multiqc=0.11.9
+  - bioconda::multiqc=1.17
 ```
 
 - Connect the outputs of fastqc to the inputs of multiqc
