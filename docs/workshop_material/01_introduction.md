@@ -5,7 +5,7 @@
 
 !!! note
 
-    This workshop has been adapted for use in CMSE 890-602 Reproducible Computational Workflows. It was previously designed by NeSI and can be found here https://github.com/nesi/snakemake_workshop
+    This workshop has been adapted for use in CMSE 890-602 Reproducible Computational Workflows. It was previously designed by Leah Kemp and NeSI and can be found here https://github.com/nesi/snakemake_workshop
 
 
 This workshop is designed with someone who had some familiarity with the command line. However, I've tried to make it as accessible as possible to anyone who wants to learn Snakemake.

@@ -2061,7 +2061,7 @@ You can exit the view create by `watch` by pressing CTRL+C.
 
 # Our final snakemake workflow!
 
-See [basic_demo_workflow](https://github.com/nesi/snakemake_workshop/tree/main/basic_demo_workflow) for the final Snakemake workflow we've created up to this point
+See [basic_demo_workflow](https://github.com/msu-cmse-courses/CMSE_890-602_snakemake/tree/main/basic_demo_workflow) for the final Snakemake workflow we've created up to this point
 
 - - - 
 

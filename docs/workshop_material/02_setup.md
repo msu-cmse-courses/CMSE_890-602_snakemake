@@ -62,7 +62,7 @@ Clone this repo with the following:
 !!! terminal "code"
 
     ```bash
-    git clone https://github.com/nesi/snakemake_workshop.git
+    git clone https://github.com/msu-cmse-courses/CMSE_890-602_snakemake.git
     ```
     ```bash
     cd snakemake_workshop
