@@ -1130,6 +1130,24 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
 
 ## 3.12 Add more rules
 
+Make a conda environment file for multiqc
+
+```bash
+# create the file
+touch ./envs/multiqc.yaml
+
+# see what versions of fastqc are available in the bioconda channel
+conda search multiqc -c bioconda
+
+# write the following to fastqc.yaml
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - bioconda::multiqc=0.11.9
+```
+
 - Connect the outputs of fastqc to the inputs of multiqc
 - Add a new final target for `rule all:`
 
@@ -1507,6 +1525,22 @@ Let's add the rest of the rules. We want to get to:
 <center>![rulegraph_1](./images/rulegraph_1.png)</center>
 
 We currently have fastqc and multiqc, so we still need to add trim_galore
+
+```bash
+# create the file
+touch ./envs/trimgalore.yaml
+
+# see what versions of fastqc are available in the bioconda channel
+conda search trim-galore -c bioconda
+
+# write the following to fastqc.yaml
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - bioconda::trim-galore=0.6.10
+```
 
 ??? code-compare "Edit snakefile"
     
