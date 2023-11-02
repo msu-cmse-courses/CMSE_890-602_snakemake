@@ -777,8 +777,8 @@ So far our logs (for fastqc) have been simply printed to our screen. As you can 
     +   log:
     +       "logs/fastqc/NA24631.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
     -       "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads}"
     +       "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
@@ -806,8 +806,8 @@ So far our logs (for fastqc) have been simply printed to our screen. As you can 
         log:
             "logs/fastqc/NA24631.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
     ```
@@ -843,8 +843,8 @@ Different ways to write log files:
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --cores 2 --use-envmodules
-    snakemake --cores 2 --use-envmodules
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
+    snakemake --cores 2 --use-conda --conda-frontend conda
     ```
 
     ??? success "output"
@@ -974,8 +974,8 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
     -       "logs/fastqc/NA24631.log"
     +       "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
     ```
@@ -1005,8 +1005,8 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
     ```
@@ -1037,7 +1037,7 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
     ```
     ```bash
     # run dryrun again
-    snakemake --dryrun --cores 2 --use-envmodules
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
     ```
 
     - See how it now runs over all three of our samples in the output of the dryrun
@@ -1110,7 +1110,7 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
 
     ```bash
     # full run again
-    snakemake --cores 2 --use-envmodules
+    snakemake --cores 2 --use-conda --conda-frontend conda
     ```
 
     - All three samples were run through our workflow! And we have a log file for each sample for the fastqc rule
@@ -1160,8 +1160,8 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -1172,8 +1172,8 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
     +       "../results/multiqc_report.html"
     +   log:
     +       "logs/multiqc/multiqc.log"
-    +   envmodules:
-    +       "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+    +   conda:
+    +       "envs/multiqc.yaml"
     +   shell:
     +       "multiqc {input} -o ../results/ &> {log}"
     ```
@@ -1205,8 +1205,8 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -1217,8 +1217,8 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     ```
@@ -1234,8 +1234,8 @@ Let's scale up to run all of our samples by using [wildcards](https://snakemake.
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --cores 2 --use-envmodules
-    snakemake --cores 2 --use-envmodules
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
+    snakemake --cores 2 --use-conda --conda-frontend conda
     ```
 
     - Visualise workflow
@@ -1283,8 +1283,8 @@ What happens if we only have the final target file (`../results/multiqc_report.h
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -1295,8 +1295,8 @@ What happens if we only have the final target file (`../results/multiqc_report.h
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     ```
@@ -1322,8 +1322,8 @@ What happens if we only have the final target file (`../results/multiqc_report.h
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -1334,8 +1334,8 @@ What happens if we only have the final target file (`../results/multiqc_report.h
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     ```
@@ -1350,7 +1350,7 @@ What happens if we only have the final target file (`../results/multiqc_report.h
     ```
     ```bash
     # run dryrun again
-    snakemake --dryrun --cores 2 --use-envmodules
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
     ```
 
     - It still works because it is the last file in the workflow sequence, Snakemake will do all the steps necessary to get to this target file (therefore it runs both fastqc and multiqc)
@@ -1399,8 +1399,8 @@ For example if only our fastqc outputs are defined as the target in `rule: all`
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -1411,8 +1411,8 @@ For example if only our fastqc outputs are defined as the target in `rule: all`
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     ```
@@ -1442,8 +1442,8 @@ For example if only our fastqc outputs are defined as the target in `rule: all`
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -1454,8 +1454,8 @@ For example if only our fastqc outputs are defined as the target in `rule: all`
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     ```
@@ -1466,7 +1466,7 @@ For example if only our fastqc outputs are defined as the target in `rule: all`
 
     ```bash
     # run dryrun again
-    snakemake --dryrun --cores 2 --use-envmodules
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
     ```
 
     !!! success "My partial output:"
@@ -1535,8 +1535,8 @@ We currently have fastqc and multiqc, so we still need to add trim_galore
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -1547,8 +1547,8 @@ We currently have fastqc and multiqc, so we still need to add trim_galore
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     
@@ -1559,8 +1559,8 @@ We currently have fastqc and multiqc, so we still need to add trim_galore
     +       ["../results/trimmed/{sample}_1_val_1.fq.gz", "../results/trimmed/{sample}_2_val_2.fq.gz"]
     +   log:
     +       "logs/trim_galore/{sample}.log"
-    +   envmodules:
-    +       "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+    +   conda:
+    +    "envs/trimgalore.yaml"
     +   threads: 2
     +   shell:
     +       "trim_galore {input} -o ../results/trimmed/ --paired --cores {threads} &> {log}"
@@ -1589,8 +1589,8 @@ We currently have fastqc and multiqc, so we still need to add trim_galore
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -1601,8 +1601,8 @@ We currently have fastqc and multiqc, so we still need to add trim_galore
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     
@@ -1613,8 +1613,8 @@ We currently have fastqc and multiqc, so we still need to add trim_galore
             ["../results/trimmed/{sample}_1_val_1.fq.gz", "../results/trimmed/{sample}_2_val_2.fq.gz"]
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         shell:
             "trim_galore {input} -o ../results/trimmed/ --paired --cores {threads} &> {log}"
@@ -1670,8 +1670,8 @@ Run the rest of the workflow
 
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --cores 2 --use-envmodules
-    snakemake --cores 2 --use-envmodules
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
+    snakemake --cores 2 --use-conda --conda-frontend conda
     ```
 
 !!! question "Notice it will run only one rule/sample/file at a time...why is that?"
@@ -1688,8 +1688,8 @@ Run again allowing Snakemake to use more cores overall `--cores 4` rather than `
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --cores 4 --use-envmodules
-    snakemake --cores 4 --use-envmodules
+    snakemake --dryrun --cores 4 --use-conda --conda-frontend conda
+    snakemake --cores 4 --use-conda --conda-frontend conda
     ```
 
 Notice the whole workflow ran much faster and several samples/files/rules were running at one time. This is because we set each rule to run with 2 threads. Initially we specified that the *maximum* number of cores to be used by the workflow was 2 with the `--cores 2` flag, meaning only one rule and sample can be run at one time. When we increased the *maximum* number of cores to be used by the workflow to 4 with `--cores 4`, up to 2 samples could be run through at one time.
@@ -1715,7 +1715,7 @@ In addition, you need to specify a maximum number of concurrent jobs using `--jo
     ```
     ```bash
     # run again on the cluster
-    snakemake --cluster "sbatch --time 00:10:00 --mem 512MB --cpus-per-task 8" --jobs 10 --use-envmodules
+    snakemake --cluster "sbatch --time 00:10:00 --mem 512MB --cpus-per-task 8" --jobs 10 --use-conda --conda-frontend conda
     ```
 
     ??? success "output"
@@ -1992,19 +1992,19 @@ You can exit the view create by `watch` by pressing CTRL+C.
     - Run a dryrun of your snakemake workflow (using environment modules to load your software) with:
     
     ```bash
-    snakemake --dryrun --cores 2 --use-envmodules
+    snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
     ```
     
     - Run your snakemake workflow (using environment modules to load your software) with:
     
     ```bash
-    snakemake --cores 2 --use-envmodules
+    snakemake --cores 2 --use-conda --conda-frontend conda
     ```
     
     - Run your snakemake workflow using multiple jobs on NeSI:
     
     ```bash
-    snakemake --cluster "sbatch --time 00:10:00 --mem=512MB --cpus-per-task 8" --jobs 10 --use-envmodules
+    snakemake --cluster "sbatch --time 00:10:00 --mem=512MB --cpus-per-task 8" --jobs 10 --use-conda --conda-frontend conda
     ```
     
     - Create a global wildcard to get process all your samples in a directory with:
@@ -2022,7 +2022,7 @@ You can exit the view create by `watch` by pressing CTRL+C.
     - Increase the number of samples that can be analysed at one time in your workflow by increasing the maximum number of cores to be used at one time with the `--cores` command
     
     ```bash
-    snakemake --cores 4 --use-envmodules
+    snakemake --cores 4 --use-conda --conda-frontend conda
     ```
 
 # Our final snakemake workflow!
