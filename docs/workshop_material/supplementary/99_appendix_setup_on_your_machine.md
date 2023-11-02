@@ -8,7 +8,7 @@ For this workshop, we will analyse our data using various software. However, the
 
 ### Check your OS
 
-If you already use Linux or MacOS X, great! Ignore this paragraph!. If you use Windows, setup a Linux virtual machine (VM) with Vagrant (see instructions on how to do this [here](https://snakemake.readthedocs.io/en/stable/tutorial/setup.html#setup-a-linux-vm-with-vagrant-under-windows)).
+If you already use Linux or MacOS X, great! Ignore this paragraph!. If you use Windows, log in to your ICER HPCC account instead.
 
 ### Installing miniconda
 
@@ -49,7 +49,7 @@ conda activate snakemake_env
 Now we can see which conda environment we are in on the command line, `(base)` has been replaced with `(snakemake_env)`
 
 ```bash
-(snakemake_env) orac$ 
+(snakemake_env) bash-4.2$ 
 ```
 
 *Snakemake has been installed within your `snakemake_env` environment, so you won't be able to see or use your Snakemake install unless you are within this environment*
@@ -60,7 +60,7 @@ Now we can see which conda environment we are in on the command line, `(base)` h
 Clone this repo with the following:
 
 ```bash
-git clone https://github.com/nesi/snakemake_workshop.git
+git clone https://github.com/msu-cmse-courses/CMSE_890-602_snakemake.git
 cd snakemake_workshop
 ```
 

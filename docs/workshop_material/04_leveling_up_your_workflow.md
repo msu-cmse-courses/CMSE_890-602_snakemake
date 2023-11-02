@@ -1567,4 +1567,4 @@ See [leveled_up_demo_workflow](https://github.com/nesi/snakemake_workshop/tree/m
 - - - 
 
 
-<p align="center"><b><a class="btn" href="https://nesi.github.io/snakemake_workshop/" style="background: var(--bs-dark);font-weight:bold">Back to homepage</a></b></p>
+<p align="center"><b><a class="btn" href="https://msu-cmse-courses.github.io/CMSE_890-602_snakemake/" style="background: var(--bs-dark);font-weight:bold">Back to homepage</a></b></p>

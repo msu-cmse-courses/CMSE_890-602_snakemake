@@ -534,219 +534,214 @@ Notice our workflow 'job nodes' are now dashed lines, this indicates that their 
 
 This can be quite informative if your workflow errors out at a rule. You can visually check which rules successfully ran and which didn't.
 
-## 3.09 Run using environment modules
+## 3.09 Run using conda environments
 
-fastqc worked because we loaded it in our current shell session. Let's specify the environment module for fastqc so the user of the workflow doesn't need to load it manually.
+fastqc worked because we loaded it in our current shell session. Let's specify the conda environment for fastqc so the user of the workflow doesn't need to load it manually.
 
-??? code-compare "Edit snakefile "Update our rule to use it using the `envmodules:` directive"
+First, we need to specify a conda environment for fastqc.
 
-    ```diff
-    # target OUTPUT files for the whole workflow
-    rule all:
-        input:
-            "../results/fastqc/NA24631_1_fastqc.html",
-            "../results/fastqc/NA24631_2_fastqc.html",
-            "../results/fastqc/NA24631_1_fastqc.zip",
-            "../results/fastqc/NA24631_2_fastqc.zip"
-    
-    # workflow
-    rule fastqc:
-        input:
-            R1 = "../../data/NA24631_1.fastq.gz",
-            R2 = "../../data/NA24631_2.fastq.gz"
-        output:
-            html = ["../results/fastqc/NA24631_1_fastqc.html", "../results/fastqc/NA24631_2_fastqc.html"],
-            zip = ["../results/fastqc/NA24631_1_fastqc.zip", "../results/fastqc/NA24631_2_fastqc.zip"]
-        threads: 2
-    +   envmodules:
-    +       "FastQC/0.11.9"
-        shell:
-            "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads}"
-    ```
+Make a conda environment file for fastqc
 
+```bash
+# create a folder for conda environments
+mkdir envs
 
+# create the file
+touch ./envs/fastqc.yaml
 
-??? file-code "Current snakefile:"
+# see what versions of fastqc are available in the bioconda channel
+conda search fastqc -c bioconda
 
-    ```python
-    # target OUTPUT files for the whole workflow
-    rule all:
-        input:
-            "../results/fastqc/NA24631_1_fastqc.html",
-            "../results/fastqc/NA24631_2_fastqc.html",
-            "../results/fastqc/NA24631_1_fastqc.zip",
-            "../results/fastqc/NA24631_2_fastqc.zip"
-    
-    # workflow
-    rule fastqc:
-        input:
-            R1 = "../../data/NA24631_1.fastq.gz",
-            R2 = "../../data/NA24631_2.fastq.gz"
-        output:
-            html = ["../results/fastqc/NA24631_1_fastqc.html", "../results/fastqc/NA24631_2_fastqc.html"],
-            zip = ["../results/fastqc/NA24631_1_fastqc.zip", "../results/fastqc/NA24631_2_fastqc.zip"]
-        threads: 2
-        envmodules:
-            "FastQC/0.11.9"
-        shell:
-            "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads}"
-    ```
-<br>
+# write the following to fastqc.yaml
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - bioconda::fastqc=0.11.9
+```
 
-Run again, now telling Snakemake to use [environment modules](https://nesi.github.io/hpc-intro/14-modules/index.html) to automatically load our software by using the `--use-envmodules` flag
+This will install [fastqc (version 0.11.9)](https://anaconda.org/bioconda/fastqc) from bioconda into a 'clean' conda environment separate from the rest of your computer
 
-!!! terminal "code"
+See [here](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-file-manually) for information on creating conda environment files.
 
-    ```diff
-    # first remove output of last run
-    rm -r ../results/*
-    
-    # Run dryrun again
-    - snakemake --dryrun --cores 2
-    + snakemake --dryrun --cores 2 --use-envmodules
-    ```
+Update our rule to use it using the `conda:` directive, pointing the rule to the `envs` directory which has our conda environment file for fastqc (directory relative to the Snakefile)
 
-    ??? success "output"
+```diff
+# target OUTPUT files for the whole workflow
+rule all:
+    input:
+        "../results/fastqc/NA24631_1_fastqc.html",
+        "../results/fastqc/NA24631_2_fastqc.html",
+        "../results/fastqc/NA24631_1_fastqc.zip",
+        "../results/fastqc/NA24631_2_fastqc.zip"
 
-        ```bash
-        Building DAG of jobs...
-        Job stats:
-        job       count    min threads    max threads
-        ------  -------  -------------  -------------
-        all           1              1              1
-        fastqc        1              2              2
-        total         2              1              2
-        
-        
-        [Wed May 11 12:13:52 2022]
-        rule fastqc:
-            input: ../../data/NA24631_1.fastq.gz, ../../data/NA24631_2.fastq.gz
-            output: ../results/fastqc/NA24631_1_fastqc.html, ../results/fastqc/NA24631_2_fastqc.html, ../results/fastqc/NA24631_1_fastqc.zip, ../results/fastqc/NA24631_2_fastqc.zip
-            jobid: 1
-            threads: 2
-            resources: tmpdir=/dev/shm/jobs/26763281
-        
-        
-        [Wed May 11 12:13:52 2022]
-        localrule all:
-            input: ../results/fastqc/NA24631_1_fastqc.html, ../results/fastqc/NA24631_2_fastqc.html, ../results/fastqc/NA24631_1_fastqc.zip, ../results/fastqc/NA24631_2_fastqc.zip
-            jobid: 0
-            resources: tmpdir=/dev/shm/jobs/26763281
-        
-        Job stats:
-        job       count    min threads    max threads
-        ------  -------  -------------  -------------
-        all           1              1              1
-        fastqc        1              2              2
-        total         2              1              2
-        
-        This was a dry-run (flag -n). The order of jobs does not reflect the order of execution.
-        ```
+# workflow
+rule fastqc:
+    input:
+        R1 = "../../data/NA24631_1.fastq.gz",
+        R2 = "../../data/NA24631_2.fastq.gz"
+    output:
+        html = ["../results/fastqc/NA24631_1_fastqc.html", "../results/fastqc/NA24631_2_fastqc.html"],
+        zip = ["../results/fastqc/NA24631_1_fastqc.zip", "../results/fastqc/NA24631_2_fastqc.zip"]
+    threads: 2
++   conda:
++       "envs/fastqc.yaml"
+    shell:
+        "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads}"
+```
+
+Run again, now telling Snakemake to use to use [Conda](https://docs.conda.io/en/latest/) to automatically install our software by using the `--use-conda` and `--conda-frontend conda` flags
+
+```diff
+# first remove output of last run
+rm -r ../results/*
+
+# Run dryrun again
+- snakemake --dryrun --cores 2
++ snakemake --dryrun --cores 2 --use-conda --conda-frontend conda
+```
+
+My output:
+
+```bash
+Building DAG of jobs...
+Conda environment envs/fastqc.yaml will be created.
+Job stats:
+job       count    min threads    max threads
+------  -------  -------------  -------------
+all           1              1              1
+fastqc        1              2              2
+total         2              1              2
 
 
+[Mon Sep 13 03:06:45 2021]
+rule fastqc:
+    input: ../../data/NA24631_1.fastq.gz, ../../data/NA24631_2.fastq.gz
+    output: ../results/fastqc/NA24631_1_fastqc.html, ../results/fastqc/NA24631_2_fastqc.html, ../results/fastqc/NA24631_1_fastqc.zip, ../results/fastqc/NA24631_2_fastqc.zip
+    jobid: 1
+    threads: 2
+    resources: tmpdir=/dev/shm/jobs/22281190
 
 
-<br>
+[Mon Sep 13 03:06:45 2021]
+localrule all:
+    input: ../results/fastqc/NA24631_1_fastqc.html, ../results/fastqc/NA24631_2_fastqc.html, ../results/fastqc/NA24631_1_fastqc.zip, ../results/fastqc/NA24631_2_fastqc.zip
+    jobid: 0
+    resources: tmpdir=/dev/shm/jobs/22281190
 
-!!! terminal-2 "Let's do a full run"
-    ```diff
-    - snakemake --cores 2
-    + snakemake --cores 2 --use-envmodules
-    ```
+Job stats:
+job       count    min threads    max threads
+------  -------  -------------  -------------
+all           1              1              1
+fastqc        1              2              2
+total         2              1              2
 
-    ??? success "output"
+This was a dry-run (flag -n). The order of jobs does not reflect the order of execution.
+```
 
-        ```bash
-        Building DAG of jobs...
-        Using shell: /usr/bin/bash
-        Provided cores: 2
-        Rules claiming more threads will be scaled down.
-        Job stats:
-        job       count    min threads    max threads
-        ------  -------  -------------  -------------
-        all           1              1              1
-        fastqc        1              2              2
-        total         2              1              2
-        
-        Select jobs to execute...
-        
-        [Wed May 11 12:14:22 2022]
-        rule fastqc:
-            input: ../../data/NA24631_1.fastq.gz, ../../data/NA24631_2.fastq.gz
-            output: ../results/fastqc/NA24631_1_fastqc.html, ../results/fastqc/NA24631_2_fastqc.html, ../results/fastqc/NA24631_1_fastqc.zip, ../results/fastqc/NA24631_2_fastqc.zip
-            jobid: 1
-            threads: 2
-            resources: tmpdir=/dev/shm/jobs/26763281
-        
-        Activating environment modules: FastQC/0.11.9
-        
-        The following modules were not unloaded:
-           (Use "module --force purge" to unload all):
-        
-          1) XALT/minimal   2) slurm   3) NeSI
-        Started analysis of NA24631_1.fastq.gz
-        Approx 5% complete for NA24631_1.fastq.gz
-        Approx 10% complete for NA24631_1.fastq.gz
-        Approx 15% complete for NA24631_1.fastq.gz
-        Approx 20% complete for NA24631_1.fastq.gz
-        Approx 25% complete for NA24631_1.fastq.gz
-        Approx 30% complete for NA24631_1.fastq.gz
-        Approx 35% complete for NA24631_1.fastq.gz
-        Approx 40% complete for NA24631_1.fastq.gz
-        Approx 45% complete for NA24631_1.fastq.gz
-        Approx 50% complete for NA24631_1.fastq.gz
-        Approx 55% complete for NA24631_1.fastq.gz
-        Approx 60% complete for NA24631_1.fastq.gz
-        Approx 65% complete for NA24631_1.fastq.gz
-        Approx 70% complete for NA24631_1.fastq.gz
-        Approx 75% complete for NA24631_1.fastq.gz
-        Started analysis of NA24631_2.fastq.gz
-        Approx 5% complete for NA24631_2.fastq.gz
-        Approx 80% complete for NA24631_1.fastq.gz
-        Approx 10% complete for NA24631_2.fastq.gz
-        Approx 85% complete for NA24631_1.fastq.gz
-        Approx 15% complete for NA24631_2.fastq.gz
-        Approx 90% complete for NA24631_1.fastq.gz
-        Approx 20% complete for NA24631_2.fastq.gz
-        Approx 95% complete for NA24631_1.fastq.gz
-        Approx 25% complete for NA24631_2.fastq.gz
-        Analysis complete for NA24631_1.fastq.gz
-        Approx 30% complete for NA24631_2.fastq.gz
-        Approx 35% complete for NA24631_2.fastq.gz
-        Approx 40% complete for NA24631_2.fastq.gz
-        Approx 45% complete for NA24631_2.fastq.gz
-        Approx 50% complete for NA24631_2.fastq.gz
-        Approx 55% complete for NA24631_2.fastq.gz
-        Approx 60% complete for NA24631_2.fastq.gz
-        Approx 65% complete for NA24631_2.fastq.gz
-        Approx 70% complete for NA24631_2.fastq.gz
-        Approx 75% complete for NA24631_2.fastq.gz
-        Approx 80% complete for NA24631_2.fastq.gz
-        Approx 85% complete for NA24631_2.fastq.gz
-        Approx 90% complete for NA24631_2.fastq.gz
-        Approx 95% complete for NA24631_2.fastq.gz
-        Analysis complete for NA24631_2.fastq.gz
-        [Wed May 11 12:14:26 2022]
-        Finished job 1.
-        1 of 2 steps (50%) done
-        Select jobs to execute...
-        
-        [Wed May 11 12:14:26 2022]
-        localrule all:
-            input: ../results/fastqc/NA24631_1_fastqc.html, ../results/fastqc/NA24631_2_fastqc.html, ../results/fastqc/NA24631_1_fastqc.zip, ../results/fastqc/NA24631_2_fastqc.zip
-            jobid: 0
-            resources: tmpdir=/dev/shm/jobs/26763281
-        
-        [Wed May 11 12:14:26 2022]
-        Finished job 0.
-        2 of 2 steps (100%) done
-        Complete log: .snakemake/log/2022-05-11T121422.744466.snakemake.log
-        ```
+Notice it now says that "Conda environment envs/fastqc.yaml will be created.". Now the software our workflow uses will be automatically installed!
 
+Let's do a full run
 
-<br>
+```diff
+- snakemake --cores 2
++ snakemake --cores 2 --use-conda --conda-frontend conda
+```
 
-Notice it now says that "Activating environment modules: FastQC/0.11.9". Now the software our workflow uses will be automatically loaded!
+My output:
+
+```bash
+Building DAG of jobs...
+Creating conda environment envs/fastqc.yaml...
+Downloading and installing remote packages.
+Environment for envs/fastqc.yaml created (location: .snakemake/conda/67c1376bae89b8de73037e703ea4b6f5)
+Using shell: /usr/bin/bash
+Provided cores: 2
+Rules claiming more threads will be scaled down.
+Job stats:
+job       count    min threads    max threads
+------  -------  -------------  -------------
+all           1              1              1
+fastqc        1              2              2
+total         2              1              2
+
+Select jobs to execute...
+
+[Mon Sep 13 03:10:27 2021]
+rule fastqc:
+    input: ../../data/NA24631_1.fastq.gz, ../../data/NA24631_2.fastq.gz
+    output: ../results/fastqc/NA24631_1_fastqc.html, ../results/fastqc/NA24631_2_fastqc.html, ../results/fastqc/NA24631_1_fastqc.zip, ../results/fastqc/NA24631_2_fastqc.zip
+    jobid: 1
+    threads: 2
+    resources: tmpdir=/dev/shm/jobs/22281190
+
+Activating conda environment: /scale_wlg_persistent/filesets/project/nesi99991/snakemake20210914/lkemp/snakemake_workshop/demo_workflow/workflow/.snakemake/conda/67c1376bae89b8de73037e703ea4b6f5
+Started analysis of NA24631_1.fastq.gz
+Approx 5% complete for NA24631_1.fastq.gz
+Approx 10% complete for NA24631_1.fastq.gz
+Approx 15% complete for NA24631_1.fastq.gz
+Approx 20% complete for NA24631_1.fastq.gz
+Approx 25% complete for NA24631_1.fastq.gz
+Approx 30% complete for NA24631_1.fastq.gz
+Approx 35% complete for NA24631_1.fastq.gz
+Approx 40% complete for NA24631_1.fastq.gz
+Approx 45% complete for NA24631_1.fastq.gz
+Approx 50% complete for NA24631_1.fastq.gz
+Approx 55% complete for NA24631_1.fastq.gz
+Approx 60% complete for NA24631_1.fastq.gz
+Started analysis of NA24631_2.fastq.gz
+Approx 65% complete for NA24631_1.fastq.gz
+Approx 5% complete for NA24631_2.fastq.gz
+Approx 70% complete for NA24631_1.fastq.gz
+Approx 10% complete for NA24631_2.fastq.gz
+Approx 75% complete for NA24631_1.fastq.gz
+Approx 15% complete for NA24631_2.fastq.gz
+Approx 80% complete for NA24631_1.fastq.gz
+Approx 20% complete for NA24631_2.fastq.gz
+Approx 85% complete for NA24631_1.fastq.gz
+Approx 25% complete for NA24631_2.fastq.gz
+Approx 90% complete for NA24631_1.fastq.gz
+Approx 30% complete for NA24631_2.fastq.gz
+Approx 95% complete for NA24631_1.fastq.gz
+Approx 35% complete for NA24631_2.fastq.gz
+Analysis complete for NA24631_1.fastq.gz
+Approx 40% complete for NA24631_2.fastq.gz
+Approx 45% complete for NA24631_2.fastq.gz
+Approx 50% complete for NA24631_2.fastq.gz
+Approx 55% complete for NA24631_2.fastq.gz
+Approx 60% complete for NA24631_2.fastq.gz
+Approx 65% complete for NA24631_2.fastq.gz
+Approx 70% complete for NA24631_2.fastq.gz
+Approx 75% complete for NA24631_2.fastq.gz
+Approx 80% complete for NA24631_2.fastq.gz
+Approx 85% complete for NA24631_2.fastq.gz
+Approx 90% complete for NA24631_2.fastq.gz
+Approx 95% complete for NA24631_2.fastq.gz
+Analysis complete for NA24631_2.fastq.gz
+[Mon Sep 13 03:10:33 2021]
+Finished job 1.
+1 of 2 steps (50%) done
+Select jobs to execute...
+
+[Mon Sep 13 03:10:33 2021]
+localrule all:
+    input: ../results/fastqc/NA24631_1_fastqc.html, ../results/fastqc/NA24631_2_fastqc.html, ../results/fastqc/NA24631_1_fastqc.zip, ../results/fastqc/NA24631_2_fastqc.zip
+    jobid: 0
+    resources: tmpdir=/dev/shm/jobs/22281190
+
+[Mon Sep 13 03:10:33 2021]
+Finished job 0.
+2 of 2 steps (100%) done
+Complete log: /scale_wlg_persistent/filesets/project/nesi99991/snakemake20210914/lkemp/snakemake_workshop/demo_workflow/workflow/.snakemake/log/2021-09-13T030734.543325.snakemake.log
+```
+
+### Additional information
+
+Have a look at [bioconda's list of packages](https://bioconda.github.io/conda-package_index.html) to see the VERY extensive list of quality open source (free) bioinformatics software that is available for download and use. Note that is only one of the conda package repositories that exist, also have a look at the [conda-forge](https://conda-forge.org/feedstocks/) and [main](https://anaconda.org/anaconda/repo) conda package repositories.
+
+Another option to run your code in self-contained and reproducible environments are containers.
+Snakemake can use Singularity containers to execute the workflow, as detailed in the [official documentation](https://snakemake.readthedocs.io/en/latest/snakefiles/deployment.html#running-jobs-in-containers).
 
 ## 3.10 Capture our logs
 
@@ -1701,16 +1696,14 @@ Notice the whole workflow ran much faster and several samples/files/rules were r
 
 ## 3.16 Throw it even more cores
 
-With a high performance cluster such as [NeSi](https://www.nesi.org.nz/), you can start to REALLY scale up, particularly when you have many samples to analyse or files to process. This is because the number of cores available in a HPC is HUGE compared to a laptop or even an high end server.
+With a high performance cluster such as [ICER](https://icer.msu.edu/), you can start to REALLY scale up, particularly when you have many samples to analyse or files to process. This is because the number of cores available in a HPC is HUGE compared to a laptop or even an high end server.
 
 <p align="center"><b>Boom! Scalability here we come!</b><br></p>
 
-<center>![image](./nesi_images/mahuika_maui_real.png){width="800"}</center>
 
+To run the workflow on the cluster, we need to ensure that each step is run as a dedicated job in the queuing system of the HPC. On ICER, the queuing system is managed by [Slurm](https://slurm.schedmd.com/documentation.html).
 
-To run the workflow on the cluster, we need to ensure that each step is run as a dedicated job in the queuing system of the HPC. On NeSI, the queuing system is managed by [Slurm](https://slurm.schedmd.com/documentation.html).
-
-Use the `--cluster` option to specify the job submission command, using `sbatch` on NeSI.
+Use the `--cluster` option to specify the job submission command, using `sbatch` on ICER.
 This command defines resources used for each job (maximum time, memory, number of cores...).
 In addition, you need to specify a maximum number of concurrent jobs using `--jobs`.
 
@@ -1722,7 +1715,7 @@ In addition, you need to specify a maximum number of concurrent jobs using `--jo
     ```
     ```bash
     # run again on the cluster
-    snakemake --cluster "sbatch --time 00:10:00 --mem 512MB --cpus-per-task 8 --account nesi99991" --jobs 10 --use-envmodules
+    snakemake --cluster "sbatch --time 00:10:00 --mem 512MB --cpus-per-task 8" --jobs 10 --use-envmodules
     ```
 
     ??? success "output"
@@ -2038,4 +2031,4 @@ See [basic_demo_workflow](https://github.com/nesi/snakemake_workshop/tree/main/b
 
 - - - 
 
-<p align="center"><b><a class="btn" href="https://nesi.github.io/snakemake_workshop/" style="background: var(--bs-dark);font-weight:bold">Back to homepage</a></b></p>
+<p align="center"><b><a class="btn" href="hhttps://msu-cmse-courses.github.io/CMSE_890-602_snakemake/" style="background: var(--bs-dark);font-weight:bold">Back to homepage</a></b></p>

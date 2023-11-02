@@ -11,4 +11,4 @@
     - Here is a fully established pipeline being used in production use that extends on the workflow we created in this workshop: [https://github.com/ESR-NZ/human_genomics_pipeline](https://github.com/ESR-NZ/human_genomics_pipeline)
 
 - - - 
-<p align="center"><b><a class="btn" href="https://nesi.github.io/snakemake_workshop/" style="background: var(--bs-dark);font-weight:bold">Back to homepage</a></b></p>
+<p align="center"><b><a class="btn" href="https://msu-cmse-courses.github.io/CMSE_890-602_snakemake/" style="background: var(--bs-dark);font-weight:bold">Back to homepage</a></b></p>
