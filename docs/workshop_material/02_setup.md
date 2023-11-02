@@ -65,7 +65,7 @@ Clone this repo with the following:
     git clone https://github.com/msu-cmse-courses/CMSE_890-602_snakemake.git
     ```
     ```bash
-    cd snakemake_workshop
+    cd CMSE_890-602_snakemake
     ```
     !!! info ""
 
