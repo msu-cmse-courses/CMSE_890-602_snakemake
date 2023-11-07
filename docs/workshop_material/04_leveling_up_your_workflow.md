@@ -1429,7 +1429,7 @@ With Snakemake, we can automatically generate detailed self-contained HTML repor
     ```
 
 !!! note "Note"
-    you won't be able to view a rendered version of this html while it is on the remote server, however after you transfer it to your local computer you should be able to view it in your web browser*
+    You won't be able to view a rendered version of this html while it is on the remote server, however after you transfer it to your local computer you should be able to view it in your web browser.
 
 In our report:
 
