@@ -283,7 +283,7 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
     snakemake --profile slurm --use-conda --conda-frontend mamba
     ```
 
-    - If you monitor the progress of your jobs using `squeue --me`, you will notice that some jobs now request 2 or 8 CPUs.
+    - If you monitor the progress of your jobs using `squeue --me -o "%.7i %9P %35j %.8u %.2t %.12M %.12L %.5C %.7m %.4D %R"`, you will notice that some jobs now request 2 or 8 CPUs.
 
     ??? success "output"
 
