@@ -92,6 +92,20 @@ In this case, we use it to set the `--cluster` and the `--jobs` options.
     snakemake --profile slurm --use-conda --conda-frontend mamba
     ```
 
+!!! failure
+
+    You may get errors like this:
+    ```
+    Error executing rule trim_galore on cluster (jobid: 6, external: 25266818, jobscript: /mnt/ufs18/home-081/fullarda/CMSE_890-602_snakemake/demo_workflow/workflow/.snakemake/tmp.yebsz1sm/snakejob.trim_galore.6.sh). For error details see the cluster log and the log files of the involved rule(s).
+    ```
+    The "cluster log" is the SLURM output log of the job. If you read the SLURM logs, it may show errors like this:
+    ```
+    MissingOutputException in rule trim_galore in file /mnt/ufs18/home-081/fullarda/CMSE_890-602_snakemake/demo_workflow/workflow/Snakefile, line 49:
+    Job 0 completed successfully, but some output files are missing. Missing files after 5 seconds. This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait.
+    ```
+
+    To resolve this, add `--latency-wait 10` to increase the wait time to 30s. This value can be increased further if needed.
+
 If you interrupt the execution of a snakemake workflow using <KBD>CTRL+C</KBD>, already submitted Slurm jobs won't be cancelled.
 We tell snakemake how to cancel Slurm jobs using `scancel` via the `--cluster-cancel` option and adding `--parsable` to the `sbatch` command, to make it return the job ID.
 
@@ -1462,38 +1476,11 @@ Snakemake has a built in linter to support you building best practice workflows,
     ??? success "output"
 
         ```bash
-        Lints for rule fastqc (line 21, /scale_wlg_persistent/filesets/project/nesi99991/snakemake20220512/lkemp/snakemake_workshop/demo_workflow/workflow/Snakefile):
-            * Additionally specify a conda environment or container for each rule, environment modules are not enough:
-              While environment modules allow to document and deploy the required software on a certain platform, they lock your workflow in there, disabling easy reproducibility on
-              other machines that don't have exactly the same environment modules. Hence env modules (which might be beneficial in certain cluster environments), should allways be
-              complemented with equivalent conda environments.
-              Also see:
-              https://snakemake.readthedocs.io/en/latest/snakefiles/deployment.html#integrated-package-management
-              https://snakemake.readthedocs.io/en/latest/snakefiles/deployment.html#running-jobs-in-containers
-        
-        Lints for rule multiqc (line 61, /scale_wlg_persistent/filesets/project/nesi99991/snakemake20220512/lkemp/snakemake_workshop/demo_workflow/workflow/Snakefile):
-            * Additionally specify a conda environment or container for each rule, environment modules are not enough:
-              While environment modules allow to document and deploy the required software on a certain platform, they lock your workflow in there, disabling easy reproducibility on
-              other machines that don't have exactly the same environment modules. Hence env modules (which might be beneficial in certain cluster environments), should allways be
-              complemented with equivalent conda environments.
-              Also see:
-              https://snakemake.readthedocs.io/en/latest/snakefiles/deployment.html#integrated-package-management
-              https://snakemake.readthedocs.io/en/latest/snakefiles/deployment.html#running-jobs-in-containers
-        
-        Lints for rule trim_galore (line 96, /scale_wlg_persistent/filesets/project/nesi99991/snakemake20220512/lkemp/snakemake_workshop/demo_workflow/workflow/Snakefile):
-            * Additionally specify a conda environment or container for each rule, environment modules are not enough:
-              While environment modules allow to document and deploy the required software on a certain platform, they lock your workflow in there, disabling easy reproducibility on
-              other machines that don't have exactly the same environment modules. Hence env modules (which might be beneficial in certain cluster environments), should allways be
-              complemented with equivalent conda environments.
-              Also see:
-              https://snakemake.readthedocs.io/en/latest/snakefiles/deployment.html#integrated-package-management
-              https://snakemake.readthedocs.io/en/latest/snakefiles/deployment.html#running-jobs-in-containers
+        Congratulations, your workflow is in a good condition!
         ```
 
 
 <br>
-
-We have a few things we could improve in our workflow!
 
 Writing a best practice workflow is more important than having Marie Kondo level tidiness, it increases the chance your workflow will continue to be used and maintained by others (and ourselves), making the code we write useful (it's exciting seeing someone else using your code!). If your workflow was used in scientific research, it makes your workflow accessible for people to reproduce your research findings; it isn't going to be a nightmare for them to run and they are more likely to try and have success doing so.
 
