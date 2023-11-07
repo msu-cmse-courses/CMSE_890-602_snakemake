@@ -74,7 +74,7 @@ In this case, we use it to set the `--cluster` and the `--jobs` options.
 !!! file-code "write the following to config.yaml"
     ```bash
     jobs: 20
-    cluster: "sbatch --time 00:10:00 --mem 512MB --cpus-per-task 8 --account nesi99991"
+    cluster: "sbatch --time 00:10:00 --mem 512MB --cpus-per-task 8"
     ```
 
 !!! terminal-2 "Then run the snakemake workflow using the `slurm` profile"
@@ -118,7 +118,6 @@ Update the profile `slurm/config.yaml` file as follows (using a multiline option
     +         --time {resources.time_min}
     +         --mem {resources.mem_mb}
     +         --cpus-per-task {resources.cpus}
-    +         --account nesi99991
     + default-resources: [cpus=2, mem_mb=512, time_min=10]
     cluster-cancel: scancel
     ```
@@ -192,7 +191,6 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
             --time {resources.time_min}
             --mem {resources.mem_mb}
             --cpus-per-task {resources.cpus}
-            --account nesi99991
     default-resources: [cpus=2, mem_mb=512, time_min=10]
     cluster-cancel: scancel
     ```
@@ -366,7 +364,6 @@ Let's clean this and create a dedicated folder `logs/slurm` for future log files
             --mem {resources.mem_mb}
             --cpus-per-task {resources.cpus}
     +       --output logs/slurm/slurm-%j-{rule}.out
-            --account nesi99991
     default-resources: [cpus=2, mem_mb=512, time_min=10]
     cluster-cancel: scancel
     ```
@@ -418,7 +415,6 @@ The `--cluster-status` option is used to tell Snakemake which script to use.
             --mem {resources.mem_mb}
             --cpus-per-task {resources.cpus}
             --output logs/slurm/slurm-%j-{rule}.out
-            --account nesi99991
     default-resources: [cpus=2, mem_mb=512, time_min=10]
     cluster-cancel: scancel
     + cluster-status: ./status.py
@@ -435,7 +431,6 @@ The `--cluster-status` option is used to tell Snakemake which script to use.
             --mem {resources.mem_mb}
             --cpus-per-task {resources.cpus}
             --output logs/slurm/slurm-%j-{rule}.out
-            --account nesi99991
     default-resources: [cpus=2, mem_mb=512, time_min=10]
     cluster-cancel: scancel
     cluster-status: ./status.py
@@ -1562,7 +1557,7 @@ Read more about the [best practices for Snakemake](https://snakemake.readthedocs
 
 # Our final snakemake workflow!
 
-See [leveled_up_demo_workflow](https://github.com/nesi/snakemake_workshop/tree/main/leveled_up_demo_workflow) for the final Snakemake workflow we've created up to this point
+See [leveled_up_demo_workflow](https://github.com/msu-cmse-courses/CMSE_890-602_snakemake/tree/main/leveled_up_demo_workflow) for the final Snakemake workflow we've created up to this point
 
 - - - 
 
