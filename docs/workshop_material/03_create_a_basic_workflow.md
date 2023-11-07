@@ -273,7 +273,6 @@ The use of the word `input` in `rule all` can be confusing, but in this context,
             zip = ["../results/fastqc/NA24631_1_fastqc.zip", "../results/fastqc/NA24631_2_fastqc.zip"]
         threads: 2
         shell:
-            "conda activate fastq | "
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads}"
     ```
 
