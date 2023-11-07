@@ -25,8 +25,8 @@
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -37,8 +37,8 @@
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     
@@ -49,8 +49,8 @@
             ["../results/trimmed/{sample}_1_val_1.fq.gz", "../results/trimmed/{sample}_2_val_2.fq.gz"]
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         shell:
             "trim_galore {input} -o ../results/trimmed/ --paired --cores {threads} &> {log}"
@@ -67,7 +67,8 @@ In this case, we use it to set the `--cluster` and the `--jobs` options.
 !!! terminal-2 "Make a `slurm` profile folder"
 
     ```bash
-    # create the profile folder
+    # create the profile folder inside demo_workflow/workflow
+    cd demo_workflow/workflow
     mkdir slurm
     touch slurm/config.yaml
     ```
@@ -85,10 +86,10 @@ In this case, we use it to set the `--cluster` and the `--jobs` options.
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --use-envmodules
+    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
     ```
     ```bash
-    snakemake --profile slurm --use-envmodules
+    snakemake --profile slurm --use-conda --conda-frontend mamba
     ```
 
 If you interrupt the execution of a snakemake workflow using <KBD>CTRL+C</KBD>, already submitted Slurm jobs won't be cancelled.
@@ -148,8 +149,8 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -160,8 +161,8 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     
@@ -172,8 +173,8 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
             ["../results/trimmed/{sample}_1_val_1.fq.gz", "../results/trimmed/{sample}_2_val_2.fq.gz"]
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
     +   resources:
     +       cpus=8
@@ -219,8 +220,8 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -231,8 +232,8 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     
@@ -243,8 +244,8 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
             ["../results/trimmed/{sample}_1_val_1.fq.gz", "../results/trimmed/{sample}_2_val_2.fq.gz"]
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         resources:
             cpus=8
@@ -262,13 +263,13 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
     ```
     ```
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --use-envmodules
+    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
     ```
     ```bash
-    snakemake --profile slurm --use-envmodules
+    snakemake --profile slurm --use-conda --conda-frontend mamba
     ```
 
-    - If you monitor the progress of your jobs using `squeue`, you will notice that some jobs now request 2 or 8 CPUs.
+    - If you monitor the progress of your jobs using `squeue --me`, you will notice that some jobs now request 2 or 8 CPUs.
 
     ??? success "output"
 
@@ -477,8 +478,8 @@ Once all of this is in place, we can:
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -489,8 +490,8 @@ Once all of this is in place, we can:
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     
@@ -503,8 +504,8 @@ Once all of this is in place, we can:
     +       "--paired"
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         resources:
             cpus=8
@@ -536,8 +537,8 @@ Once all of this is in place, we can:
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
       
@@ -548,8 +549,8 @@ Once all of this is in place, we can:
             "../results/multiqc_report.html"
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ &> {log}"
     
@@ -562,8 +563,8 @@ Once all of this is in place, we can:
             "--paired"
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         resources:
             cpus=8
@@ -581,7 +582,7 @@ Once all of this is in place, we can:
     ```
     ```
     # run dryrun again
-    snakemake --dryrun --profile slurm --use-envmodules
+    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
     ```
 
 ## 4.3 Pull out user configurable options
@@ -650,8 +651,8 @@ PARAMS:
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
     -       "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
     +       "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} {params.fastqc_params} &> {log}"
@@ -665,8 +666,8 @@ PARAMS:
     +       multiqc_params = config['PARAMS']['MULTIQC']
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
     -       "multiqc {input} -o ../results/ &> {log}"
     +       "multiqc {input} -o ../results/ {params.multiqc_params} &> {log}"
@@ -680,8 +681,8 @@ PARAMS:
             "--paired"
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         resources:
             cpus=8
@@ -714,8 +715,8 @@ PARAMS:
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} {params.fastqc_params} &> {log}"
       
@@ -728,8 +729,8 @@ PARAMS:
             multiqc_params = config['PARAMS']['MULTIQC']
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ {params.multiqc_params} &> {log}"
     
@@ -742,8 +743,8 @@ PARAMS:
             "--paired"
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         resources:
             cpus=8
@@ -761,10 +762,10 @@ PARAMS:
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --use-envmodules
+    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
     ```
     ```bash
-    snakemake --profile slurm --use-envmodules
+    snakemake --profile slurm --use-conda --conda-frontend mamba
     ```
 
     ??? failure "Didn't work? My error:"
@@ -787,10 +788,10 @@ Snakemake can't find our 'Key' - we haven't told Snakemake where our config file
     ```
     ```diff
     # run dryrun/run again
-    - snakemake --dryrun --profile slurm --use-envmodules
-    - snakemake --profile slurm --use-envmodules
-    + snakemake --dryrun --profile slurm --use-envmodules --configfile ../config/config.yaml
-    + snakemake --profile slurm --use-envmodules --configfile ../config/config.yaml
+    - snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
+    - snakemake --profile slurm --use-conda --conda-frontend mamba
+    + snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba --configfile ../config/config.yaml
+    + snakemake --profile slurm --use-conda --conda-frontend mamba --configfile ../config/config.yaml
     ```
 
 Alternatively, we can define our config file in our Snakefile in a situation where the configuration file is likely to always be named the same and be in the exact same location `../config/config.yaml` and you don't need the flexibility for the user to specify their own configuration files:
@@ -823,8 +824,8 @@ Alternatively, we can define our config file in our Snakefile in a situation whe
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} {params.fastqc_params} &> {log}"
       
@@ -837,8 +838,8 @@ Alternatively, we can define our config file in our Snakefile in a situation whe
             multiqc_params = config['PARAMS']['MULTIQC']
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ {params.multiqc_params} &> {log}"
     
@@ -851,8 +852,8 @@ Alternatively, we can define our config file in our Snakefile in a situation whe
             "--paired"
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         resources:
             cpus=8
@@ -888,8 +889,8 @@ Alternatively, we can define our config file in our Snakefile in a situation whe
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         shell:
             "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} {params.fastqc_params} &> {log}"
       
@@ -902,8 +903,8 @@ Alternatively, we can define our config file in our Snakefile in a situation whe
             multiqc_params = config['PARAMS']['MULTIQC']
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         shell:
             "multiqc {input} -o ../results/ {params.multiqc_params} &> {log}"
     
@@ -916,8 +917,8 @@ Alternatively, we can define our config file in our Snakefile in a situation whe
             "--paired"
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         resources:
             cpus=8
@@ -937,10 +938,10 @@ Then we don't need to specify where the configuration file is on the command lin
     ```
     ```diff 
     # run dryrun/run again
-    - snakemake --dryrun --profile slurm --use-envmodules --configfile ../config/config.yaml
-    - snakemake --profile slurm --use-envmodules --configfile ../config/config.yaml
-    + snakemake --dryrun --profile slurm --use-envmodules
-    + snakemake --profile slurm --use-envmodules
+    - snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba --configfile ../config/config.yaml
+    - snakemake --profile slurm --use-conda --conda-frontend mamba --configfile ../config/config.yaml
+    + snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
+    + snakemake --profile slurm --use-conda --conda-frontend mamba
     ```
 
 ## 4.4 Leave messages for the user
@@ -979,8 +980,8 @@ We can provide the user of our workflow more information on what is happening at
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
     +   message:
     +       "Undertaking quality control checks {input}"
         shell:
@@ -995,8 +996,8 @@ We can provide the user of our workflow more information on what is happening at
             multiqc_params = config['PARAMS']['MULTIQC']
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
     +   message:
     +       "Compiling a HTML report for quality control checks. Writing to {output}."
         shell:
@@ -1011,8 +1012,8 @@ We can provide the user of our workflow more information on what is happening at
             "--paired"
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         resources:
             cpus=8
@@ -1050,8 +1051,8 @@ We can provide the user of our workflow more information on what is happening at
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         message:
             "Undertaking quality control checks {input}"
         shell:
@@ -1066,8 +1067,8 @@ We can provide the user of our workflow more information on what is happening at
             multiqc_params = config['PARAMS']['MULTIQC']
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         message:
             "Compiling a HTML report for quality control checks. Writing to {output}."
         shell:
@@ -1082,8 +1083,8 @@ We can provide the user of our workflow more information on what is happening at
             "--paired"
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         resources:
             cpus=8
@@ -1104,8 +1105,8 @@ We can provide the user of our workflow more information on what is happening at
 
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --use-envmodules
-    snakemake --profile slurm --use-envmodules
+    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
+    snakemake --profile slurm --use-conda --conda-frontend mamba
     ```
     
     - Now our messages are printed to the screen as our workflow runs
@@ -1263,8 +1264,8 @@ Let's mark all the trimmed fastq files as temporary in our Snakefile by wrapping
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         message:
             "Undertaking quality control checks {input}"
         shell:
@@ -1279,8 +1280,8 @@ Let's mark all the trimmed fastq files as temporary in our Snakefile by wrapping
             multiqc_params = config['PARAMS']['MULTIQC']
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         message:
             "Compiling a HTML report for quality control checks. Writing to {output}."
         shell:
@@ -1295,8 +1296,8 @@ Let's mark all the trimmed fastq files as temporary in our Snakefile by wrapping
             "--paired"
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         resources:
             cpus=8
@@ -1334,8 +1335,8 @@ Let's mark all the trimmed fastq files as temporary in our Snakefile by wrapping
         log:
             "logs/fastqc/{sample}.log"
         threads: 2
-        envmodules:
-            "FastQC/0.11.9"
+        conda:
+            "envs/fastqc.yaml"
         message:
             "Undertaking quality control checks {input}"
         shell:
@@ -1350,8 +1351,8 @@ Let's mark all the trimmed fastq files as temporary in our Snakefile by wrapping
             multiqc_params = config['PARAMS']['MULTIQC']
         log:
             "logs/multiqc/multiqc.log"
-        envmodules:
-            "MultiQC/1.9-gimkl-2020a-Python-3.8.2"
+        conda:
+            "envs/multiqc.yaml"
         message:
             "Compiling a HTML report for quality control checks. Writing to {output}."
         shell:
@@ -1366,8 +1367,8 @@ Let's mark all the trimmed fastq files as temporary in our Snakefile by wrapping
             "--paired"
         log:
             "logs/trim_galore/{sample}.log"
-        envmodules:
-            "TrimGalore/0.6.7-gimkl-2020a-Python-3.8.2-Perl-5.30.1"
+        conda:
+            "envs/trimgalore.yaml"
         threads: 2
         resources:
             cpus=8
@@ -1388,8 +1389,8 @@ Let's mark all the trimmed fastq files as temporary in our Snakefile by wrapping
     ```
     ```bash    
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --use-envmodules
-    snakemake --profile slurm --use-envmodules
+    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
+    snakemake --profile slurm --use-conda --conda-frontend mamba
     ```
 
 !!! terminal-2 "Now when we have a look at the `../results/fastqc/` directory with:"
@@ -1527,7 +1528,7 @@ Read more about the [best practices for Snakemake](https://snakemake.readthedocs
     - Run your snakemake workflow (using environment modules to load your software AND with a configuration file) with:
     
     ```bash
-    snakemake --cores 2 --use-envmodules --configfile ../config/config.yaml
+    snakemake --cores 2 --use-conda --conda-frontend mamba --configfile ../config/config.yaml
     ```
     
     - Alternatively, define your config file in the Snakefile:
