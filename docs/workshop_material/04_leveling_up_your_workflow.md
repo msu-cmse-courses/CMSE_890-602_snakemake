@@ -92,7 +92,7 @@ In this case, we use it to set the `--cluster` and the `--jobs` options.
     snakemake --profile slurm --use-conda --conda-frontend mamba
     ```
 
-!!! failure
+!!! failure "Possible error"
 
     You may get errors like this:
     ```
@@ -104,7 +104,7 @@ In this case, we use it to set the `--cluster` and the `--jobs` options.
     Job 0 completed successfully, but some output files are missing. Missing files after 5 seconds. This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait.
     ```
 
-    To resolve this, add `--latency-wait 10` to increase the wait time to 30s. This value can be increased further if needed.
+    To resolve this, add `--latency-wait 30` to increase the wait time to 30s. This value can be increased further if needed.
 
 If you interrupt the execution of a snakemake workflow using <KBD>CTRL+C</KBD>, already submitted Slurm jobs won't be cancelled.
 We tell snakemake how to cancel Slurm jobs using `scancel` via the `--cluster-cancel` option and adding `--parsable` to the `sbatch` command, to make it return the job ID.
@@ -468,6 +468,8 @@ Once all of this is in place, we can:
 
 
 ## 4.2 Pull out parameters
+
+We can set parameters for commands using the `params` rule option so that they can be more human-readable:
 
 ??? code-compare "Edit snakefile"
     
