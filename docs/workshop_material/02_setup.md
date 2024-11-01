@@ -2,22 +2,26 @@
 
 
 
-## Install Miniconda
+## Install Miniforge
 
-For this workshop, we will analyse our data using various software. However, the only software we will need to manually install is [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
+For this workshop, we will analyse our data using various software. However, the only software we will need to manually install is [Miniforge](https://docs.conda.io/en/latest/miniconda.html).
 
 ### Check your OS
 
 If you already use Linux or MacOS X, great! Ignore this paragraph!. If you use Windows, log in to your ICER HPCC account instead. The total required storage for this 
 workshop is **~2 GB**.
 
-### Installing miniconda
+### Installing Miniforge
 
-Information on how to install Miniconda can be found [on their website](https://docs.conda.io/en/latest/miniconda.html). Snakemake also provides information on installing Miniconda in [their documentation](https://snakemake.readthedocs.io/en/stable/tutorial/setup.html#step-1-installing-miniconda-3)
+Information on how to install Miniforge can be found [on their repository](https://github.com/conda-forge/miniforge?tab=readme-ov-file).
+
+### What if I already have a conda installation, or I am on ICER?
+
+Great! You can use your existing conda installation, whether it be Anaconda, Miniconda, Miniforge etc. On ICER, you can also load our Miniforge3 module with the command `module purge; module load Miniforge3`.
 
 ## Create a conda environment
 
-With Miniconda, we can create a conda environment which acts as a space contained from the rest of the machine in which our workflow will automatically install all the necessary software it uses, supporting the portability and reproducibility of your workflow.
+With Miniforge, we can create a conda environment which acts as a space contained from the rest of the machine in which our workflow will automatically install all the necessary software it uses, supporting the portability and reproducibility of your workflow.
 
 Create a conda environment (called `snakemake_env`) that has Snakemake installed (and all it's dependant software) and git (which will be used to clone this repository later)
 
