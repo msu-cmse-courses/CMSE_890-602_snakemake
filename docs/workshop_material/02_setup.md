@@ -4,7 +4,7 @@
 
 ## Install Miniforge
 
-For this workshop, we will analyse our data using various software. However, the only software we will need to manually install is [Miniforge](https://docs.conda.io/en/latest/miniconda.html).
+For this workshop, we will analyse our data using various software. However, the only software we will need to manually install is [Miniforge](https://github.com/conda-forge/miniforge).
 
 ### Check your OS
 
