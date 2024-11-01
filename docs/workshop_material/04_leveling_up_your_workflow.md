@@ -86,10 +86,10 @@ In this case, we use it to set the `--cluster` and the `--jobs` options.
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
+    snakemake --dryrun --profile slurm --use-conda
     ```
     ```bash
-    snakemake --profile slurm --use-conda --conda-frontend mamba
+    snakemake --profile slurm --use-conda
     ```
 
 !!! failure "Possible error"
@@ -277,10 +277,10 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
     ```
     ```
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
+    snakemake --dryrun --profile slurm --use-conda
     ```
     ```bash
-    snakemake --profile slurm --use-conda --conda-frontend mamba
+    snakemake --profile slurm --use-conda
     ```
 
     - If you monitor the progress of your jobs using `squeue --me -o "%.7i %9P %35j %.8u %.2t %.12M %.12L %.5C %.7m %.4D %R"`, you will notice that some jobs now request 2 or 8 CPUs.
@@ -598,7 +598,7 @@ We can set parameters for commands using the `params` rule option so that they c
     ```
     ```
     # run dryrun again
-    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
+    snakemake --dryrun --profile slurm --use-conda
     ```
 
 ## 4.3 Pull out user configurable options
@@ -778,10 +778,10 @@ PARAMS:
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
+    snakemake --dryrun --profile slurm --use-conda
     ```
     ```bash
-    snakemake --profile slurm --use-conda --conda-frontend mamba
+    snakemake --profile slurm --use-conda
     ```
 
     ??? failure "Didn't work? My error:"
@@ -804,10 +804,10 @@ Snakemake can't find our 'Key' - we haven't told Snakemake where our config file
     ```
     ```diff
     # run dryrun/run again
-    - snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
-    - snakemake --profile slurm --use-conda --conda-frontend mamba
-    + snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba --configfile ../config/config.yaml
-    + snakemake --profile slurm --use-conda --conda-frontend mamba --configfile ../config/config.yaml
+    - snakemake --dryrun --profile slurm --use-conda
+    - snakemake --profile slurm --use-conda
+    + snakemake --dryrun --profile slurm --use-conda --configfile ../config/config.yaml
+    + snakemake --profile slurm --use-conda --configfile ../config/config.yaml
     ```
 
 Alternatively, we can define our config file in our Snakefile in a situation where the configuration file is likely to always be named the same and be in the exact same location `../config/config.yaml` and you don't need the flexibility for the user to specify their own configuration files:
@@ -954,10 +954,10 @@ Then we don't need to specify where the configuration file is on the command lin
     ```
     ```diff 
     # run dryrun/run again
-    - snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba --configfile ../config/config.yaml
-    - snakemake --profile slurm --use-conda --conda-frontend mamba --configfile ../config/config.yaml
-    + snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
-    + snakemake --profile slurm --use-conda --conda-frontend mamba
+    - snakemake --dryrun --profile slurm --use-conda --configfile ../config/config.yaml
+    - snakemake --profile slurm --use-conda --configfile ../config/config.yaml
+    + snakemake --dryrun --profile slurm --use-conda
+    + snakemake --profile slurm --use-conda
     ```
 
 ## 4.4 Leave messages for the user
@@ -1121,8 +1121,8 @@ We can provide the user of our workflow more information on what is happening at
 
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
-    snakemake --profile slurm --use-conda --conda-frontend mamba
+    snakemake --dryrun --profile slurm --use-conda
+    snakemake --profile slurm --use-conda
     ```
     
     - Now our messages are printed to the screen as our workflow runs
@@ -1405,8 +1405,8 @@ Let's mark all the trimmed fastq files as temporary in our Snakefile by wrapping
     ```
     ```bash    
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --use-conda --conda-frontend mamba
-    snakemake --profile slurm --use-conda --conda-frontend mamba
+    snakemake --dryrun --profile slurm --use-conda
+    snakemake --profile slurm --use-conda
     ```
 
 !!! terminal-2 "Now when we have a look at the `../results/fastqc/` directory with:"
@@ -1517,7 +1517,7 @@ Read more about the [best practices for Snakemake](https://snakemake.readthedocs
     - Run your snakemake workflow (using environment modules to load your software AND with a configuration file) with:
     
     ```bash
-    snakemake --cores 2 --use-conda --conda-frontend mamba --configfile ../config/config.yaml
+    snakemake --cores 2 --use-conda --configfile ../config/config.yaml
     ```
     
     - Alternatively, define your config file in the Snakefile:
