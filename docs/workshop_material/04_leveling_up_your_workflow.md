@@ -62,7 +62,8 @@
 
 In section 3.16, we have seen that a snakemake workflow can be run on an HPC cluster.
 To reduce the boilerplate, we can use a [configuration profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) to configure default options.
-In this case, we use it to set the `--cluster` and the `--jobs` options.
+In this case, we use it to set the `--executor` and the `--jobs` options.
+Default resources for all rules should be set using the `default-resources` option.
 
 !!! terminal-2 "Make a `slurm` profile folder"
 
@@ -112,27 +113,8 @@ In this case, we use it to set the `--cluster` and the `--jobs` options.
 
 If you interrupt the execution of a snakemake workflow using <KBD>CTRL+C</KBD>, the SLURM executor plugin will automatically cancel the jobs.
 
-You can specify different resources (memory, cpus, gpus, etc.) for each target in the workflow and refer to them in the `cluster` option using placeholders.
-Default resources for all rules can also be set using the `default-resources` option.
+You can specify different resources (memory, cpus, gpus, etc.) for each rule in the workflow.
 
-Update the profile `slurm/config.yaml` file as follows (using a multiline option to improve readability)
-
-!!! code-compare "Edit config.yml"
-
-    ```diff
-    jobs: 20
-    - cluster: "sbatch --parsable --time 00:10:00 --mem 512MB --cpus-per-task 8"
-    + cluster:
-    +     sbatch
-    +         --parsable
-    +         --time {resources.time_min}
-    +         --mem {resources.mem_mb}
-    +         --cpus-per-task {resources.cpus}
-    + default-resources: [cpus=2, mem_mb=512, time_min=10]
-    cluster-cancel: scancel
-    ```
-
-and add resources definitions in the workflow.
 Here we give more CPU resources to `trim_galore` to make it run faster.
 
 ??? code-compare "Edit snakefile"
@@ -186,24 +168,11 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
             "envs/trimgalore.yaml"
         threads: 2
     +   resources:
-    +       cpus=8
+    +       cpus_per_task=8
         shell:
             "trim_galore {input} -o ../results/trimmed/ --paired --cores {threads} &> {log}"
     ```
-    
-??? file-code "Current slurm profile:"
 
-    ```
-    jobs: 20
-    cluster:
-        sbatch
-            --parsable
-            --time {resources.time_min}
-            --mem {resources.mem_mb}
-            --cpus-per-task {resources.cpus}
-    default-resources: [cpus=2, mem_mb=512, time_min=10]
-    cluster-cancel: scancel
-    ```
 
 ??? file-code "Current snakefile:"
 
@@ -257,7 +226,7 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
             "envs/trimgalore.yaml"
         threads: 2
         resources:
-            cpus=8
+            cpus_per_task=8
         shell:
             "trim_galore {input} -o ../results/trimmed/ --paired --cores {threads} &> {log}"
     ```
@@ -295,158 +264,19 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
     
 <br>
 
-Now looking at the content of our workflow folder, it is getting cluttered with Slurm log files:
+### Logging
 
-!!! terminal "code"
+SLURM log files for each rule can be found in the workflow's `.snakemake/slurm_logs` directory.
+The SLURM logs are stored separately for each rule within a directory named after the rule.
 
-    ```bash
-    ls -lh
-    ```
+### Snakemake-SLURM communication
 
-    ??? success "output"
+The SLURM executor plugin tracks job completion, failure and cancellations.
+You can request specific numbers of retries in the case of job failures with the
+option `--retries=N` where `N` is the number of retries per rule.
 
-        ```bash
-        total 1.8M
-        -rw-rw----+ 1 lkemp nesi99991 4.2K May 11 12:10 dag_1.png
-        -rw-rw----+ 1 lkemp nesi99991 3.8K May 11 12:13 dag_2.png
-        -rw-rw----+ 1 lkemp nesi99991  12K May 11 12:16 dag_3.png
-        -rw-rw----+ 1 lkemp nesi99991  20K May 11 12:19 dag_4.png
-        -rw-rw----+ 1 lkemp nesi99991  15K May 11 12:21 dag_5.png
-        -rw-rw----+ 1 lkemp nesi99991  12K May 11 12:23 dag_6.png
-        -rw-rw----+ 1 lkemp nesi99991  26K May 11 12:24 dag_7.png
-        drwxrws---+ 5 lkemp nesi99991 4.0K May 11 12:25 logs
-        -rw-rw----+ 1 lkemp nesi99991  11K May 11 12:24 rulegraph_1.png
-        drwxrws---+ 3 lkemp nesi99991 4.0K May 11 12:34 slurm
-        -rw-rw----+ 1 lkemp nesi99991  837 May 11 12:27 slurm-26763403.out
-        -rw-rw----+ 1 lkemp nesi99991  809 May 11 12:27 slurm-26763404.out
-        -rw-rw----+ 1 lkemp nesi99991  837 May 11 12:27 slurm-26763405.out
-        -rw-rw----+ 1 lkemp nesi99991  837 May 11 12:27 slurm-26763406.out
-        -rw-rw----+ 1 lkemp nesi99991  809 May 11 12:27 slurm-26763407.out
-        -rw-rw----+ 1 lkemp nesi99991  809 May 11 12:27 slurm-26763408.out
-        -rw-rw----+ 1 lkemp nesi99991  865 May 11 12:29 slurm-26763409.out
-        -rw-rw----+ 1 lkemp nesi99991  837 May 11 12:30 slurm-26763418.out
-        -rw-rw----+ 1 lkemp nesi99991  809 May 11 12:30 slurm-26763419.out
-        -rw-rw----+ 1 lkemp nesi99991  837 May 11 12:30 slurm-26763420.out
-        -rw-rw----+ 1 lkemp nesi99991  837 May 11 12:30 slurm-26763421.out
-        -rw-rw----+ 1 lkemp nesi99991  809 May 11 12:30 slurm-26763422.out
-        -rw-rw----+ 1 lkemp nesi99991  809 May 11 12:30 slurm-26763423.out
-        -rw-rw----+ 1 lkemp nesi99991  865 May 11 12:32 slurm-26763431.out
-        -rw-rw----+ 1 lkemp nesi99991  837 May 11 12:33 slurm-26763435.out
-        -rw-rw----+ 1 lkemp nesi99991  809 May 11 12:34 slurm-26763436.out
-        -rw-rw----+ 1 lkemp nesi99991  837 May 11 12:33 slurm-26763437.out
-        -rw-rw----+ 1 lkemp nesi99991  837 May 11 12:34 slurm-26763438.out
-        -rw-rw----+ 1 lkemp nesi99991  809 May 11 12:34 slurm-26763439.out
-        -rw-rw----+ 1 lkemp nesi99991  809 May 11 12:34 slurm-26763440.out
-        -rw-rw----+ 1 lkemp nesi99991  865 May 11 12:35 slurm-26763444.out
-        -rw-rw----+ 1 lkemp nesi99991  857 May 11 12:36 slurm-26763447.out
-        -rw-rw----+ 1 lkemp nesi99991  829 May 11 12:36 slurm-26763448.out
-        -rw-rw----+ 1 lkemp nesi99991  857 May 11 12:36 slurm-26763449.out
-        -rw-rw----+ 1 lkemp nesi99991  857 May 11 12:36 slurm-26763450.out
-        -rw-rw----+ 1 lkemp nesi99991  829 May 11 12:36 slurm-26763451.out
-        -rw-rw----+ 1 lkemp nesi99991  829 May 11 12:36 slurm-26763452.out
-        -rw-rw----+ 1 lkemp nesi99991  885 May 11 12:37 slurm-26763454.out
-        -rw-rw----+ 1 lkemp nesi99991 1.8K May 11 12:34 Snakefile
-        ```
-        
-<br>
-
-Let's clean this and create a dedicated folder `logs/slurm` for future log files:
-
-!!! terminal "code"
-
-    ```bash
-    # remove slurm log files
-    rm *.out
-    ```
-    ```bash
-    # create a new folder for Slurm log files
-    mkdir logs/slurm
-    ```
-
-!!! code-compare "then instruct Slurm to save its log files in it, in the profile `slurm/config.yaml` file"
-
-    ```diff
-    jobs: 20
-    cluster:
-        sbatch
-            --parsable
-            --time {resources.time_min}
-            --mem {resources.mem_mb}
-            --cpus-per-task {resources.cpus}
-    +       --output logs/slurm/slurm-%j-{rule}.out
-    default-resources: [cpus=2, mem_mb=512, time_min=10]
-    cluster-cancel: scancel
-    ```
-
-Note that `logs/slurm/slurm-%j-{rule}.out` contains a placeholder `{rule}`, which will be replaced by the name of the rule during the execution of the workflow.
-
-Finally, to improve the communication between Snakemake and Slurm, we meed an additional script translating Slurm job status for Snakemake.
-The `--cluster-status` option is used to tell Snakemake which script to use.
-
-!!! terminal-2 "Create an executable `status.py` file"
-
-    ```bash
-    # create an empty file
-    touch status.py
-    ```
-    ```bash
-    # make it executable
-    chmod +x status.py
-    ```
-    
-    - and copy the following content in it
-    
-    ```python
-    #!/usr/bin/env python
-    import subprocess
-    import sys
-    
-    jobid = sys.argv[1]
-    
-    output = str(subprocess.check_output("sacct -j %s --format State --noheader | head -1 | awk '{print $1}'" % jobid, shell=True).strip())
-    
-    running_status=["PENDING", "CONFIGURING", "COMPLETING", "RUNNING", "SUSPENDED"]
-    if "COMPLETED" in output:
-        print("success")
-    elif any(r in output for r in running_status):
-        print("running")
-    else:
-        print("failed")
-    ```
-
-??? code-compare "Then modify the profile `slurm/config.yaml` file"
-
-    ```diff
-    jobs: 20
-    cluster:
-        sbatch
-            --parsable
-            --time {resources.time_min}
-            --mem {resources.mem_mb}
-            --cpus-per-task {resources.cpus}
-            --output logs/slurm/slurm-%j-{rule}.out
-    default-resources: [cpus=2, mem_mb=512, time_min=10]
-    cluster-cancel: scancel
-    + cluster-status: ./status.py
-    ```
-
-??? file-code "Current slurm profile:"
-
-    ```
-    jobs: 20
-    cluster:
-        sbatch
-            --parsable
-            --time {resources.time_min}
-            --mem {resources.mem_mb}
-            --cpus-per-task {resources.cpus}
-            --output logs/slurm/slurm-%j-{rule}.out
-    default-resources: [cpus=2, mem_mb=512, time_min=10]
-    cluster-cancel: scancel
-    cluster-status: ./status.py
-    ```
-
-<br>
+Alternatively, you can use SLURM itself to handle the requeuing of jobs by adding
+`--slurm-requeue` to the `snakemake` command or in the workflow profile.
 
 Once all of this is in place, we can:
 
@@ -454,12 +284,11 @@ Once all of this is in place, we can:
 
     - submit Slurm jobs with the right resources per Snakemake rule,
     - cancel the workflow and Slurms jobs using CTRL-C,
-    - keep all slurm jobs log files in a dedicated folder,
-    - and make sure Snakemake reports Slurm jobs failures.
+    - keep all slurm jobs log files in a dedicated folder.
 
 !!! question "Exercise"
 
-    Run the snakemake workflow with Slurm jobs then use `scancel JOBID` to cancel some Slurm. See how Snakemake reacts with and without the `status.py` script.
+    Run the snakemake workflow with Slurm jobs then use `scancel JOBID` to cancel some Slurm. See how Snakemake reacts.
 
 
 ## 4.2 Pull out parameters
@@ -519,7 +348,7 @@ We can set parameters for commands using the `params` rule option so that they c
             "envs/trimgalore.yaml"
         threads: 2
         resources:
-            cpus=8
+            cpus_per_task=8
         shell:
     -       "trim_galore {input} -o ../results/trimmed/ --paired --cores {threads} &> {log}"
     +       "trim_galore {input} -o ../results/trimmed/ {params} --cores {threads} &> {log}"
@@ -578,7 +407,7 @@ We can set parameters for commands using the `params` rule option so that they c
             "envs/trimgalore.yaml"
         threads: 2
         resources:
-            cpus=8
+            cpus_per_task=8
         shell:
             "trim_galore {input} -o ../results/trimmed/ {params} --cores {threads} &> {log}"
     ```
@@ -696,7 +525,7 @@ PARAMS:
             "envs/trimgalore.yaml"
         threads: 2
         resources:
-            cpus=8
+            cpus_per_task=8
         shell:
             "trim_galore {input} -o ../results/trimmed/ {params} --cores {threads} &> {log}"
     ```
@@ -758,7 +587,7 @@ PARAMS:
             "envs/trimgalore.yaml"
         threads: 2
         resources:
-            cpus=8
+            cpus_per_task=8
         shell:
             "trim_galore {input} -o ../results/trimmed/ {params} --cores {threads} &> {log}"
     ```
@@ -867,7 +696,7 @@ Alternatively, we can define our config file in our Snakefile in a situation whe
             "envs/trimgalore.yaml"
         threads: 2
         resources:
-            cpus=8
+            cpus_per_task=8
         shell:
             "trim_galore {input} -o ../results/trimmed/ {params} --cores {threads} &> {log}"
     ```
@@ -932,7 +761,7 @@ Alternatively, we can define our config file in our Snakefile in a situation whe
             "envs/trimgalore.yaml"
         threads: 2
         resources:
-            cpus=8
+            cpus_per_task=8
         shell:
             "trim_galore {input} -o ../results/trimmed/ {params} --cores {threads} &> {log}"
     ```
@@ -1027,7 +856,7 @@ We can provide the user of our workflow more information on what is happening at
             "envs/trimgalore.yaml"
         threads: 2
         resources:
-            cpus=8
+            cpus_per_task=8
     +   message:
     +       "Trimming using these parameter: {params}. Writing logs to {log}. Using {threads} threads."
         shell:
@@ -1098,7 +927,7 @@ We can provide the user of our workflow more information on what is happening at
             "envs/trimgalore.yaml"
         threads: 2
         resources:
-            cpus=8
+            cpus_per_task=8
         message:
             "Trimming using these parameter: {params}. Writing logs to {log}. Using {threads} threads."
         shell:
@@ -1311,7 +1140,7 @@ Let's mark all the trimmed fastq files as temporary in our Snakefile by wrapping
             "envs/trimgalore.yaml"
         threads: 2
         resources:
-            cpus=8
+            cpus_per_task=8
         message:
             "Trimming using these parameter: {params}. Writing logs to {log}. Using {threads} threads."
         shell:
@@ -1382,7 +1211,7 @@ Let's mark all the trimmed fastq files as temporary in our Snakefile by wrapping
             "envs/trimgalore.yaml"
         threads: 2
         resources:
-            cpus=8
+            cpus_per_task=8
         message:
             "Trimming using these parameter: {params}. Writing logs to {log}. Using {threads} threads."
         shell:
