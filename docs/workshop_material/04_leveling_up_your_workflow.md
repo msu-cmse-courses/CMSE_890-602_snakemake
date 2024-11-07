@@ -75,7 +75,11 @@ In this case, we use it to set the `--cluster` and the `--jobs` options.
 !!! file-code "write the following to config.yaml"
     ```bash
     jobs: 20
-    cluster: "sbatch --time 00:10:00 --mem 512MB --cpus-per-task 8"
+    executor: slurm
+    default-resources:
+        runtime: 10
+        mem_mb: 512
+        cpus_per_task: 8
     ```
 
 !!! terminal-2 "Then run the snakemake workflow using the `slurm` profile"
@@ -86,10 +90,10 @@ In this case, we use it to set the `--cluster` and the `--jobs` options.
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --software-deployment-method conda
+    snakemake --dryrun --workflow-profile slurm --software-deployment-method conda
     ```
     ```bash
-    snakemake --profile slurm --software-deployment-method conda
+    snakemake --workflow-profile slurm --software-deployment-method conda
     ```
 
 !!! failure "Possible error"
@@ -106,16 +110,7 @@ In this case, we use it to set the `--cluster` and the `--jobs` options.
 
     To resolve this, add `--latency-wait 30` to increase the wait time to 30s. This value can be increased further if needed.
 
-If you interrupt the execution of a snakemake workflow using <KBD>CTRL+C</KBD>, already submitted Slurm jobs won't be cancelled.
-We tell snakemake how to cancel Slurm jobs using `scancel` via the `--cluster-cancel` option and adding `--parsable` to the `sbatch` command, to make it return the job ID.
-
-!!! code-compare "Edit config.yaml"
-    ```diff
-    jobs: 20
-    - cluster: "sbatch --time 00:10:00 --mem 512MB --cpus-per-task 8"
-    + cluster: "sbatch --parsable --time 00:10:00 --mem 512MB --cpus-per-task 8"
-    + cluster-cancel: scancel
-    ```
+If you interrupt the execution of a snakemake workflow using <KBD>CTRL+C</KBD>, the SLURM executor plugin will automatically cancel the jobs.
 
 You can specify different resources (memory, cpus, gpus, etc.) for each target in the workflow and refer to them in the `cluster` option using placeholders.
 Default resources for all rules can also be set using the `default-resources` option.
@@ -277,10 +272,10 @@ Here we give more CPU resources to `trim_galore` to make it run faster.
     ```
     ```
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --software-deployment-method conda
+    snakemake --dryrun --workflow-profile slurm --software-deployment-method conda
     ```
     ```bash
-    snakemake --profile slurm --software-deployment-method conda
+    snakemake --workflow-profile slurm --software-deployment-method conda
     ```
 
     - If you monitor the progress of your jobs using `squeue --me -o "%.7i %9P %35j %.8u %.2t %.12M %.12L %.5C %.7m %.4D %R"`, you will notice that some jobs now request 2 or 8 CPUs.
@@ -598,7 +593,7 @@ We can set parameters for commands using the `params` rule option so that they c
     ```
     ```
     # run dryrun again
-    snakemake --dryrun --profile slurm --software-deployment-method conda
+    snakemake --dryrun --workflow-profile slurm --software-deployment-method conda
     ```
 
 ## 4.3 Pull out user configurable options
@@ -778,10 +773,10 @@ PARAMS:
     ```
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --software-deployment-method conda
+    snakemake --dryrun --workflow-profile slurm --software-deployment-method conda
     ```
     ```bash
-    snakemake --profile slurm --software-deployment-method conda
+    snakemake --workflow-profile slurm --software-deployment-method conda
     ```
 
     ??? failure "Didn't work? My error:"
@@ -804,10 +799,10 @@ Snakemake can't find our 'Key' - we haven't told Snakemake where our config file
     ```
     ```diff
     # run dryrun/run again
-    - snakemake --dryrun --profile slurm --software-deployment-method conda
-    - snakemake --profile slurm --software-deployment-method conda
-    + snakemake --dryrun --profile slurm --software-deployment-method conda --configfile ../config/config.yaml
-    + snakemake --profile slurm --software-deployment-method conda --configfile ../config/config.yaml
+    - snakemake --dryrun --workflow-profile slurm --software-deployment-method conda
+    - snakemake --workflow-profile slurm --software-deployment-method conda
+    + snakemake --dryrun --workflow-profile slurm --software-deployment-method conda --configfile ../config/config.yaml
+    + snakemake --workflow-profile slurm --software-deployment-method conda --configfile ../config/config.yaml
     ```
 
 Alternatively, we can define our config file in our Snakefile in a situation where the configuration file is likely to always be named the same and be in the exact same location `../config/config.yaml` and you don't need the flexibility for the user to specify their own configuration files:
@@ -954,10 +949,10 @@ Then we don't need to specify where the configuration file is on the command lin
     ```
     ```diff 
     # run dryrun/run again
-    - snakemake --dryrun --profile slurm --software-deployment-method conda --configfile ../config/config.yaml
-    - snakemake --profile slurm --software-deployment-method conda --configfile ../config/config.yaml
-    + snakemake --dryrun --profile slurm --software-deployment-method conda
-    + snakemake --profile slurm --software-deployment-method conda
+    - snakemake --dryrun --workflow-profile slurm --software-deployment-method conda --configfile ../config/config.yaml
+    - snakemake --workflow-profile slurm --software-deployment-method conda --configfile ../config/config.yaml
+    + snakemake --dryrun --workflow-profile slurm --software-deployment-method conda
+    + snakemake --workflow-profile slurm --software-deployment-method conda
     ```
 
 ## 4.4 Leave messages for the user
@@ -1121,8 +1116,8 @@ We can provide the user of our workflow more information on what is happening at
 
     ```bash
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --software-deployment-method conda
-    snakemake --profile slurm --software-deployment-method conda
+    snakemake --dryrun --workflow-profile slurm --software-deployment-method conda
+    snakemake --workflow-profile slurm --software-deployment-method conda
     ```
     
     - Now our messages are printed to the screen as our workflow runs
@@ -1405,8 +1400,8 @@ Let's mark all the trimmed fastq files as temporary in our Snakefile by wrapping
     ```
     ```bash    
     # run dryrun/run again
-    snakemake --dryrun --profile slurm --software-deployment-method conda
-    snakemake --profile slurm --software-deployment-method conda
+    snakemake --dryrun --workflow-profile slurm --software-deployment-method conda
+    snakemake --workflow-profile slurm --software-deployment-method conda
     ```
 
 !!! terminal-2 "Now when we have a look at the `../results/fastqc/` directory with:"
