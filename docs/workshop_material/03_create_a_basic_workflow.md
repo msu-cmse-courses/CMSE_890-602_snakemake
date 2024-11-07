@@ -1746,7 +1746,15 @@ With a high performance cluster such as [ICER](https://icer.msu.edu/), you can s
 
 To run the workflow on the cluster, we need to ensure that each step is run as a dedicated job in the queuing system of the HPC. On ICER, the queuing system is managed by [Slurm](https://slurm.schedmd.com/documentation.html).
 
-Use the `--cluster` option to specify the job submission command, using `sbatch` on ICER.
+First, we must install an _executor plugin_ for SLURM:
+
+!!! terminal "code"
+
+    ```bash
+    conda install bioconda::snakemake-executor-plugin-slurm
+    ```
+
+Use the `--executor` option to specify the job submission command, using `slurm` on ICER.
 This command defines resources used for each job (maximum time, memory, number of cores...).
 In addition, you need to specify a maximum number of concurrent jobs using `--jobs`.
 
@@ -1758,7 +1766,7 @@ In addition, you need to specify a maximum number of concurrent jobs using `--jo
     ```
     ```bash
     # run again on the cluster
-    snakemake --cluster "sbatch --time 00:10:00 --mem 512MB --cpus-per-task 8" --jobs 10 --use-conda
+    snakemake --cluster slurm --default-resources runtime=10 mem_mb=512 cpus_per_task=8 --jobs 10 --use-conda
     ```
 
     ??? success "output"
