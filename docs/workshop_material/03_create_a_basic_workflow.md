@@ -1148,10 +1148,10 @@ touch ./envs/multiqc.yaml
 # see what versions of fastqc are available in the bioconda channel
 conda search multiqc -c bioconda
 
-# write the following to fastqc.yaml
+# write the following to multiqc.yaml
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
   - defaults
 dependencies:
   - bioconda::multiqc=1.17
