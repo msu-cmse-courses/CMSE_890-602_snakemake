@@ -1762,6 +1762,109 @@ Use the `--executor` option to specify the job submission command, using `slurm`
 This command defines resources used for each job (maximum time, memory, number of cores...).
 In addition, you need to specify a maximum number of concurrent jobs using `--jobs`.
 
+ICER does not have conda installed as a default module, so there are two options to proceed.
+
+1. Edit your `~/.bashrc` file to automatically swap the Python module with Miniforge in your terminal.
+2. Use the pre-installed environment modules for each rule with the `envmodules` directive.
+
+### Editing `.bashrc`
+
+1. Open your `~/.bashrc` file in a text editor.
+2. At the end of the file, add the line
+
+```bash
+module swap Python-bundle-PyPI Miniforge3
+```
+
+### Using the `envmodules` directive
+
+In your snakefile, modify the `fastqc` rule by adding:
+
+```python
+envmodules:
+    "FastQC/0.12.1-Java-11"
+```
+
+modify the `multiqc` rule by adding:
+
+```python
+envmodules:
+    "MultiQC/1.14-foss-2022b"
+```
+
+modify the `trim_galore` rule by adding:
+
+```python
+envmodules:
+    "TrimGalore/0.6.10-GCCcore-12.2.0"
+```
+
+which results in the snakefile:
+
+??? file-code "Modified snakefile:"
+
+    ```python
+    # define samples from data directory using wildcards
+    SAMPLES, = glob_wildcards("../../data/{sample}_1.fastq.gz")
+
+    # target OUTPUT files for the whole workflow
+    rule all:
+        input:
+            "../results/multiqc_report.html",
+            expand(["../results/trimmed/{sample}_1_val_1.fq.gz", "../results/trimmed/{sample}_2_val_2.fq.gz"], sample = SAMPLES)
+
+    # workflow
+    rule fastqc:
+        input:
+            R1 = "../../data/{sample}_1.fastq.gz",
+            R2 = "../../data/{sample}_2.fastq.gz"
+        output:
+            html = ["../results/fastqc/{sample}_1_fastqc.html", "../results/fastqc/{sample}_2_fastqc.html"],
+            zip = ["../results/fastqc/{sample}_1_fastqc.zip", "../results/fastqc/{sample}_2_fastqc.zip"]
+        log:
+            "logs/fastqc/{sample}.log"
+        threads: 2
+        conda:
+            "envs/fastqc.yaml"
+        envmodules:
+            "FastQC/0.12.1-Java-11"
+        shell:
+            "fastqc {input.R1} {input.R2} -o ../results/fastqc/ -t {threads} &> {log}"
+
+    rule multiqc:
+        input:
+            expand(["../results/fastqc/{sample}_1_fastqc.zip", "../results/fastqc/{sample}_2_fastqc.zip"], sample = SAMPLES)
+        output:
+            "../results/multiqc_report.html"
+        log:
+            "logs/multiqc/multiqc.log"
+        conda:
+            "envs/multiqc.yaml"
+        envmodules:
+            "MultiQC/1.14-foss-2022b"
+        shell:
+            "multiqc {input} -o ../results/ &> {log}"
+
+    rule trim_galore:
+        input:
+            ["../../data/{sample}_1.fastq.gz", "../../data/{sample}_2.fastq.gz"]
+        output:
+            ["../results/trimmed/{sample}_1_val_1.fq.gz", "../results/trimmed/{sample}_2_val_2.fq.gz"]
+        log:
+            "logs/trim_galore/{sample}.log"
+        conda:
+            "envs/trimgalore.yaml"
+        envmodules:
+            "TrimGalore/0.6.10-GCCcore-12.2.0"
+        threads: 2
+        shell:
+            "trim_galore {input} -o ../results/trimmed/ --paired --cores {threads} &> {log}"
+    ```
+
+!!! note
+
+    If you are using environment modules, change the `--software-deployment-method` argument to `env-modules`.
+
 !!! terminal "code"
 
     ```bash
@@ -1770,7 +1873,7 @@ In addition, you need to specify a maximum number of concurrent jobs using `--jo
     ```
     ```bash
     # run again on the cluster
-    snakemake --cluster slurm --default-resources runtime=10 mem_mb=512 cpus_per_task=8 --jobs 10 --software-deployment-method conda
+    snakemake --executor slurm --default-resources runtime=10 mem_mb=512 cpus_per_task=8 --jobs 10 --software-deployment-method conda
     ```
 
     ??? success "output"
