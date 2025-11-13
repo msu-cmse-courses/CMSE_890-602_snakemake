@@ -353,6 +353,10 @@ The last table in the output confirms that the workflow will run one sample (`co
 
 We can also visualise our workflow by creating a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) (DAG). We can tell snakemake to create a DAG with the `--dag` flag, then pipe this output to the [dot software](https://graphviz.org/) and write the output to the file, `dag_1.png`
 
+!!! note
+
+    If you don't have dot installed, you can add it to your snakemake environment with the command `conda install graphviz`.
+
 !!! terminal "code"
 
     ```bash
@@ -2084,3 +2088,4 @@ See [basic_demo_workflow](https://github.com/msu-cmse-courses/CMSE_890-602_snake
 - - - 
 
 <p align="center"><b><a class="btn" href="hhttps://msu-cmse-courses.github.io/CMSE_890-602_snakemake/" style="background: var(--bs-dark);font-weight:bold">Back to homepage</a></b></p>
+
