@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://msu-cmse-courses.github.io/CMSE_890-602_snakemake/</loc>
+         <lastmod>2025-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://msu-cmse-courses.github.io/CMSE_890-602_snakemake/workshop_material/01_introduction/</loc>
+         <lastmod>2025-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://msu-cmse-courses.github.io/CMSE_890-602_snakemake/workshop_material/02_setup/</loc>
+         <lastmod>2025-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://msu-cmse-courses.github.io/CMSE_890-602_snakemake/workshop_material/03_create_a_basic_workflow/</loc>
+         <lastmod>2025-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://msu-cmse-courses.github.io/CMSE_890-602_snakemake/workshop_material/04_leveling_up_your_workflow/</loc>
+         <lastmod>2025-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://msu-cmse-courses.github.io/CMSE_890-602_snakemake/workshop_material/05_we_want_more/</loc>
+         <lastmod>2025-11-13</lastmod>
+    </url>
+</urlset>
